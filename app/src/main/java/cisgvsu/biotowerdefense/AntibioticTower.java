@@ -9,17 +9,21 @@ public class AntibioticTower {
     private AntibioticType type;
     private int power;
     private int cost;
+    /** 0 - 4 to begin with */
+    private int location;
 
     public AntibioticTower() {
         this.type = AntibioticType.penicillin;
         this.power = AntibioticType.getPower(type);
         this.cost = AntibioticType.getCost(type);
+        this.location = 0;
     }
 
-    public AntibioticTower(AntibioticType type) {
+    public AntibioticTower(AntibioticType type, int location) {
         this.type = type;
         this.power = AntibioticType.getPower(type);
         this.cost = AntibioticType.getCost(type);
+        this.location = location;
     }
 
     public AntibioticType getType() {
