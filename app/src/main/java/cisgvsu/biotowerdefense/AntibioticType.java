@@ -5,18 +5,16 @@ package cisgvsu.biotowerdefense;
  */
 
 public enum AntibioticType {
-    penicillin, amoxicillin, cephalexin, erythromycin;
+    penicillin, vancomycin, linezolid;
 
     public static int getPower(AntibioticType type) {
         switch (type) {
             case penicillin:
                 return 1;
-            case amoxicillin:
+            case vancomycin:
                 return 2;
-            case cephalexin:
+            case linezolid:
                 return 3;
-            case erythromycin:
-                return 4;
             default:
                 return 0;
         }
@@ -25,12 +23,10 @@ public enum AntibioticType {
          switch (type) {
              case penicillin:
                  return 1;
-             case amoxicillin:
+             case vancomycin:
                  return 2;
-             case cephalexin:
+             case linezolid:
                  return 3;
-             case erythromycin:
-                 return 4;
              default:
                  return 0;
          }

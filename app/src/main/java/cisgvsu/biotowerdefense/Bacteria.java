@@ -12,10 +12,10 @@ public class Bacteria {
     private int health;
 
     /** The antibiotics available and if this bacteria is resistant to them. */
-    private HashMap<String, Boolean> resistant;
+    private HashMap<AntibioticType, Boolean> resistant;
 
     /** The type of this bacteria. */
-    private String type;
+    private BacteriaType type;
 
     /** Whether or not this bacteria is currently on the screen. */
     private boolean onScreen;
@@ -29,7 +29,7 @@ public class Bacteria {
      * @param type
      * @param health
      */
-    public Bacteria(String type, int health) {
+    public Bacteria(BacteriaType type, int health) {
         this.type = type;
         this.health = health;
         this.value = health;
@@ -59,7 +59,7 @@ public class Bacteria {
      * @param antibiotic The antibiotic we're checking.
      * @return True if resistant, false otherwise.
      */
-    public boolean isResistantTo(String antibiotic) {
+    public boolean isResistantTo(AntibioticType antibiotic) {
         return resistant.get(antibiotic);
     }
 
@@ -67,7 +67,7 @@ public class Bacteria {
      * Set the new resistance value for the specified antibiotic.
      * @param newResistance
      */
-    public void setResistant(String antibiotic, boolean newResistance) {
+    public void setResistant(AntibioticType antibiotic, boolean newResistance) {
         this.resistant.put(antibiotic, newResistance);
     }
 
@@ -75,7 +75,7 @@ public class Bacteria {
      * Return the type of this bacteria.
      * @return
      */
-    public String getType() {
+    public BacteriaType getType() {
         return type;
     }
 
@@ -83,7 +83,7 @@ public class Bacteria {
      * Set the type of this bacteria.
      * @param type
      */
-    private void setType(String type) {
+    private void setType(BacteriaType type) {
         this.type = type;
     }
 
@@ -92,6 +92,7 @@ public class Bacteria {
      * @return
      */
     public boolean isOnScreen() {
+
         return onScreen;
     }
 
@@ -100,6 +101,7 @@ public class Bacteria {
      * @param onScreen
      */
     public void setOnScreen(boolean onScreen) {
+
         this.onScreen = onScreen;
     }
 
@@ -108,6 +110,7 @@ public class Bacteria {
      * @return
      */
     public int getValue() {
+
         return value;
     }
 
@@ -116,6 +119,7 @@ public class Bacteria {
      * @param value
      */
     public void setValue(int value) {
+
         this.value = value;
     }
 }
