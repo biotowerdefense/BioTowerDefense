@@ -122,4 +122,8 @@ public class Bacteria {
 
         this.value = value;
     }
+
+    public boolean outOfRange() {
+        return false;
+    }
 }
