@@ -1,6 +1,6 @@
 package cisgvsu.biotowerdefense;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * The bacteria objects for the game.
@@ -11,11 +11,12 @@ public class Bacteria {
     /** The bacteria's current health. */
     private int health;
 
-    /** The antibiotics available and if this bacteria is resistant to them. */
-    private HashMap<AntibioticType, Boolean> resistant;
+    /** The antibiotics that this bacteria is NOT yet resistant to, even when other
+     *  bacteria of the same type that are created later will be resistant to them.*/
+    private ArrayList<AntibioticType> exempt;
 
     /** The type of this bacteria. */
-    private BacteriaType type;
+    private final BacteriaType type;
 
     /** Whether or not this bacteria is currently on the screen. */
     private boolean onScreen;
@@ -34,7 +35,7 @@ public class Bacteria {
         this.health = health;
         this.value = health;
         this.onScreen = false;
-        this.resistant = null;
+        this.exempt = null;
     }
 
     /**
@@ -55,20 +56,28 @@ public class Bacteria {
 
     /**
      * Return a boolean indicating whether or not the bacteria
-     * is resistant to the specific antibiotic.
+     * is exempt from resistant to the specific antibiotic.
      * @param antibiotic The antibiotic we're checking.
-     * @return True if resistant, false otherwise.
+     * @return True if exempt from resistant, false otherwise.
      */
-    public boolean isResistantTo(AntibioticType antibiotic) {
-        return resistant.get(antibiotic);
+    public boolean isExempt(AntibioticType antibiotic) {
+        if (exempt != null && exempt.contains(antibiotic)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
-     * Set the new resistance value for the specified antibiotic.
-     * @param newResistance
+     * Set this bacteria as being exempt from resistant to the
+     * specified antibiotic.
+     * @param antibiotic
      */
-    public void setResistant(AntibioticType antibiotic, boolean newResistance) {
-        this.resistant.put(antibiotic, newResistance);
+    public void setExempt(AntibioticType antibiotic) {
+        if (exempt == null) {
+            exempt = new ArrayList<>();
+        }
+        this.exempt.add(antibiotic);
     }
 
     /**
@@ -77,14 +86,6 @@ public class Bacteria {
      */
     public BacteriaType getType() {
         return type;
-    }
-
-    /**
-     * Set the type of this bacteria.
-     * @param type
-     */
-    private void setType(BacteriaType type) {
-        this.type = type;
     }
 
     /**

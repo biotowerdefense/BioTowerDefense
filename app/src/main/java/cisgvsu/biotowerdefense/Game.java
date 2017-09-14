@@ -1,18 +1,14 @@
 package cisgvsu.biotowerdefense;
 
-import android.support.annotation.NonNull;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 
 /**
- * Created by Kelsey on 9/6/2017.
+ * This class controls the interaction of antibiotic towers and bacteria.
  */
 
 public class Game {
@@ -31,6 +27,8 @@ public class Game {
         towers.add(new AntibioticTower(AntibioticType.penicillin, 0));
         this.activateTower(towers.get(0));
 
+        // Add bacteria to game
+        this.startAddingBacteria();
     }
 
     /**
@@ -56,20 +54,70 @@ public class Game {
     }
 
     /**
-     * First check if bacteria is already resistant to the antibiotic,
-     * then run resistance algorithm to determine if this hit will
-     * make it resistant. Return true if resistant, false otherwise.
+     * This method returns whether or not the specific bacteria passed in
+     * is resistant to the antibiotic. There are several cases.
+     *
+     * Case 1: Bacteria type is already resistant to the antibiotic, and
+     * this individual one is not exempt. Return true.
+     *
+     * Case 2: Bacteria type is already resistant to the antibiotic, but this
+     * individual was created before they were all resistant. Run algorithm.
+     *
+     * Case 3: Bacteria type is not resistant at all. Run algorithm.
+     *
      * @param bacteria The bacteria we're checking for resistance.
      * @param antibiotic The type of antibiotic we're checking for resistance to.
      * @return True if the bacteria is resistant, false otherwise.
      */
     private boolean resistant(Bacteria bacteria, AntibioticType antibiotic) {
-        if (bacteria.isResistantTo(antibiotic)) {
+        // Check if this type of bacteria is resistant to this type of antibiotic,
+        // and if the specific bacteria is not exempt from resistance
+        if (resistances.get(bacteria.getType()).contains(antibiotic) &&
+                !bacteria.isExempt(antibiotic)) {
             return true;
         } else {
-            // TODO: Actually implement this
-            return false;
+            // Run the algorithm to see if the bacteria becomes resistant.
+            boolean nowResistant = this.resistanceAlgorithm(bacteria.getType(), antibiotic);
+
+            // Update various fields to reflect the new resistance
+            if (nowResistant) {
+                // Update local resistance data
+                if (resistances.get(bacteria) == null) {
+                    List list = new ArrayList<>();
+                    list.add(antibiotic);
+                    resistances.put(bacteria.getType(), list);
+                } else {
+                    resistances.get(bacteria).add(antibiotic);
+                }
+
+                // Mark any bacteria of this type that are already created as being exempt
+                // to this antibiotic
+                for (AntibioticTower t : bacteriaToTower.keySet()) {
+                    Bacteria b[] = (Bacteria[]) bacteriaToTower.get(t).toArray();
+                    for (int i = 0; i < b.length; i++) {
+                        if (b[i].getType().equals(bacteria.getType())) {
+                            b[i].setExempt(antibiotic);
+                        }
+                    }
+                }
+
+                // TODO: Notify control class that bacteria became resistant
+                return true;
+            } else {
+                return false;
+            }
         }
+    }
+
+    /**
+     *
+     * @param bacteriaType
+     * @param antibiotic
+     * @return
+     */
+    private boolean resistanceAlgorithm(BacteriaType bacteriaType, AntibioticType antibiotic) {
+        // TODO: Implement me!
+        return false;
     }
 
     /**
@@ -116,6 +164,14 @@ public class Game {
     }
 
     /**
+     * Start a threat to begin adding bacteria to the game.
+     */
+    private void startAddingBacteria() {
+        BacteriaThread t = new BacteriaThread();
+        t.start();
+    }
+
+    /**
      * Thread to shoot the tower.
      */
     class TowerThread extends Thread {
@@ -133,6 +189,7 @@ public class Game {
         /**
          * Shoot at the bacteria once every second.
          */
+        @Override
         public void run() {
             while (true) {
                 shootBacteria(tower);
@@ -153,6 +210,7 @@ public class Game {
          * Add a bacteria every second. Check if the head of each tower's queue
          * is out of range, if so, move it to next tower.
          */
+        @Override
         public void run() {
             while (true) {
                 addBacteria(BacteriaType.staph);
