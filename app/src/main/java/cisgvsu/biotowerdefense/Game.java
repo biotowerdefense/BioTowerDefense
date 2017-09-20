@@ -1,16 +1,19 @@
 package cisgvsu.biotowerdefense;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class controls the interaction of antibiotic towers and bacteria.
+ * The only public methods are for starting and stopping the game, and
+ * adding and removing towers.
+ *
+ * Kelsey Brennan
+ * 9/22/17
  */
 
 public class Game {
@@ -18,22 +21,53 @@ public class Game {
     private Vector<AntibioticTower> towers;
 
     /** Mapping of the bacteria that are in each tower's range.  */
-    private Map<AntibioticTower, Queue<Bacteria>> bacteriaToTower;
+    private ConcurrentHashMap<AntibioticTower, Queue<Bacteria>> bacteriaToTower;
 
     /** Antibiotic resistance for new bacteria. */
-    private Map<BacteriaType, List<AntibioticType>> resistances;
+    private ConcurrentHashMap<BacteriaType, List<AntibioticType>> resistances;
 
     /** The number of towers allowed in the game. */
     private static final int NUM_TOWERS = 5;
+
+    /** The thread that adds bacteria to the game. */
+    BacteriaThread bacteriaThread = new BacteriaThread();
+
+    /** The set of threads that make the towers shoot. */
+    private List<TowerThread> towerThreads = new ArrayList<>();
+
+    /** Control whether te game should be running the thread to add bacteria. */
+    private boolean addingBacteria;
 
     /**
      * Creates a new game instance by instantiating the
      * fields, making them all thread-safe.
      */
     public Game() {
-        towers = new Vector<AntibioticTower>(NUM_TOWERS);
-        bacteriaToTower = Collections.synchronizedMap(new HashMap<AntibioticTower, Queue<Bacteria>>());
-        resistances = Collections.synchronizedMap(new HashMap<BacteriaType, List<AntibioticType>>());
+        towers = new Vector<>(NUM_TOWERS);
+        bacteriaToTower = new ConcurrentHashMap<>();
+        resistances = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Start the game by making the towers shoot
+     * and bacteria move.
+     */
+    public void startGame() {
+        this.startAddingBacteria();
+        for (AntibioticTower t : towers) {
+            this.activateTower(t);
+        }
+    }
+
+    /**
+     * Stop the towers from shooting and bacteria from
+     * moving.
+     */
+    public void stopGame() {
+        this.addingBacteria = false;
+        for (AntibioticTower t : towers) {
+            t.setShooting(false);
+        }
     }
 
     /**
@@ -50,15 +84,20 @@ public class Game {
         if (location > NUM_TOWERS - 1 || location < 0) {
             return null;
         } else {
-            // Get rid of any tower currently at that location
+            // Get rid of tower currently at that location if it exists
             AntibioticTower oldTower = null;
             if (!towers.isEmpty() && towers.get(location) != null) {
                 oldTower = towers.remove(location);
+
+                // Stop shooting thread for this tower
+                towerThreads.remove(location);
+                oldTower.setShooting(false);
             }
 
             // Make a new tower and add it to the list
             AntibioticTower newTower =  new AntibioticTower(type, location);
             towers.add(location, newTower);
+            towerThreads.add(location, new TowerThread(newTower));
 
             // Get any bacteria that may have belonged to the tower previously in this
             // location and remove it from the mapping
@@ -86,8 +125,10 @@ public class Game {
         if (location > NUM_TOWERS - 1 || location < 0) {
             return null;
         } else {
-            // Remove from list of towers
+            // Remove from list of towers & stop thread
             AntibioticTower t = towers.remove(location);
+            towerThreads.remove(location);
+            t.setShooting(false);
 
             // Move any bacteria in its queue to next tower
             Queue<Bacteria> queue = bacteriaToTower.remove(t);
@@ -98,8 +139,9 @@ public class Game {
                 }
             }
 
-            // Put a null value in to maintain positions of other towers
+            // Put null values in to maintain positions of other towers
             towers.add(location, null);
+            towerThreads.add(location, null);
             return t;
         }
     }
@@ -112,7 +154,7 @@ public class Game {
      * @param tower The tower that is currently shooting.
      * @return True if the bacteria was killed, false otherwise.
      */
-    public boolean shootBacteria(AntibioticTower tower) {
+    private boolean shootBacteria(AntibioticTower tower) {
         Queue<Bacteria> bacteria = bacteriaToTower.get(tower);
         Bacteria first = bacteria.peek();
 
@@ -147,7 +189,7 @@ public class Game {
      * @param antibiotic The type of antibiotic we're checking for resistance to.
      * @return True if the bacteria is resistant, false otherwise.
      */
-    public boolean resistant(Bacteria bacteria, AntibioticType antibiotic) {
+    private boolean resistant(Bacteria bacteria, AntibioticType antibiotic) {
         // Check if this type of bacteria is resistant to this type of antibiotic,
         // and if the specific bacteria is not exempt from resistance
         if (!resistances.isEmpty() && resistances.get(bacteria.getType()).contains(antibiotic) &&
@@ -197,7 +239,20 @@ public class Game {
      */
     private boolean resistanceAlgorithm(BacteriaType bacteriaType, AntibioticType antibiotic) {
         // TODO: Implement me!
-        return false;
+        double chance = 0;
+        switch (antibiotic) {
+            case penicillin:
+                chance = 0.03;
+                break;
+            case vancomycin:
+                chance = 0.01;
+                break;
+            case linezolid:
+                chance = 0.008;
+                break;
+        }
+
+        return Math.random() <= chance;
     }
 
     /**
@@ -206,7 +261,7 @@ public class Game {
      *
      * @param type The type of bacteria to be added to the game.
      */
-    public void addBacteria(BacteriaType type) {
+    private void addBacteria(BacteriaType type) {
         // Create the new bacteria
         Bacteria bacteria = new Bacteria(type, 1);
 
@@ -238,22 +293,24 @@ public class Game {
     }
 
     /**
-     * Start a thread for the specified tower so that it shoots
+     * Start the thread for the specified tower so that it shoots
      * at the bacteria in its range.
      *
      * @param tower The tower that will begin shooting.
      */
     private void activateTower(AntibioticTower tower) {
-        TowerThread thread = new TowerThread(tower);
-        thread.start();
+        tower.setShooting(true);
+        int index = towers.indexOf(tower);
+        TowerThread t = towerThreads.get(index);
+        t.start();
     }
 
     /**
-     * Start a threat to begin adding bacteria to the game.
+     * Start a thread to begin adding bacteria to the game.
      */
     private void startAddingBacteria() {
-        BacteriaThread t = new BacteriaThread();
-        t.start();
+        this.addingBacteria = true;
+        bacteriaThread.start();
     }
 
     /**
@@ -276,7 +333,7 @@ public class Game {
          */
         @Override
         public void run() {
-            while (true) {
+            while (tower.getShooting()) {
                 shootBacteria(tower);
                 try {
                     sleep(1000);
@@ -297,7 +354,7 @@ public class Game {
          */
         @Override
         public void run() {
-            while (true) {
+            while (addingBacteria) {
                 addBacteria(BacteriaType.staph);
                 for (AntibioticTower t : towers) {
                     if (bacteriaToTower.get(t).peek().outOfRange()) {
