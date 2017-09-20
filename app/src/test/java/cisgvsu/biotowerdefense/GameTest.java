@@ -13,7 +13,6 @@ import static junit.framework.Assert.assertEquals;
 
 public class GameTest {
 
-
     @Test
     public void shootBacteria() throws Exception {
         Game g = new Game();
@@ -21,4 +20,5 @@ public class GameTest {
         g.addBacteria(BacteriaType.pneumonia);
         assertEquals(g.shootBacteria(towers.get(0)), true);
     }
+
 }

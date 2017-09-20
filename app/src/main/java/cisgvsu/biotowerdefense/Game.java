@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class controls the interaction of antibiotic towers and bacteria.
@@ -18,10 +18,10 @@ public class Game {
     private Vector<AntibioticTower> towers;
 
     /** Mapping of the bacteria that are in each tower's range.  */
-    private Map<AntibioticTower, Queue<Bacteria>> bacteriaToTower;
+    private ConcurrentHashMap<AntibioticTower, Queue<Bacteria>> bacteriaToTower;
 
     /** Antibiotic resistance for new bacteria. */
-    private Map<BacteriaType, List<AntibioticType>> resistances;
+    private ConcurrentHashMap<BacteriaType, List<AntibioticType>> resistances;
 
     /** The number of towers allowed in the game. */
     private static final int NUM_TOWERS = 5;
@@ -32,8 +32,8 @@ public class Game {
      */
     public Game() {
         towers = new Vector<AntibioticTower>(NUM_TOWERS);
-        bacteriaToTower = Collections.synchronizedMap(new HashMap<AntibioticTower, Queue<Bacteria>>());
-        resistances = Collections.synchronizedMap(new HashMap<BacteriaType, List<AntibioticType>>());
+        bacteriaToTower = new ConcurrentHashMap<AntibioticTower, Queue<Bacteria>>();
+        resistances = new ConcurrentHashMap<BacteriaType, List<AntibioticType>>();
     }
 
     /**
@@ -197,7 +197,20 @@ public class Game {
      */
     private boolean resistanceAlgorithm(BacteriaType bacteriaType, AntibioticType antibiotic) {
         // TODO: Implement me!
-        return false;
+        double chance = 0;
+        switch (antibiotic) {
+            case penicillin:
+                chance = 0.03;
+                break;
+            case vancomycin:
+                chance = 0.01;
+                break;
+            case linezolid:
+                chance = 0.008;
+                break;
+        }
+
+        return Math.random() <= chance;
     }
 
     /**
