@@ -30,7 +30,7 @@ public class Game {
     private static final int NUM_TOWERS = 5;
 
     /** The thread that adds bacteria to the game. */
-    BacteriaThread bacteriaThread = new BacteriaThread();
+    private BacteriaThread bacteriaThread = new BacteriaThread();
 
     /** The set of threads that make the towers shoot. */
     private List<TowerThread> towerThreads = new ArrayList<>();
@@ -101,7 +101,7 @@ public class Game {
 
             // Get any bacteria that may have belonged to the tower previously in this
             // location and remove it from the mapping
-            LinkedList<Bacteria> bacteriaList = new LinkedList<Bacteria>();
+            LinkedList<Bacteria> bacteriaList = new LinkedList<>();
             if (oldTower != null) {
                 bacteriaList = (LinkedList<Bacteria>) bacteriaToTower.remove(oldTower);
             }
@@ -294,7 +294,9 @@ public class Game {
 
     /**
      * Start the thread for the specified tower so that it shoots
-     * at the bacteria in its range.
+     * at the bacteria in its range - check first that it hasn't
+     * already been started. Set the flag to indicate that the
+     * thread should execute.
      *
      * @param tower The tower that will begin shooting.
      */
@@ -302,15 +304,22 @@ public class Game {
         tower.setShooting(true);
         int index = towers.indexOf(tower);
         TowerThread t = towerThreads.get(index);
-        t.start();
+        if (!t.isAlive()) {
+            t.start();
+        }
     }
 
     /**
-     * Start a thread to begin adding bacteria to the game.
+     * Start a thread to begin adding bacteria to the game -
+     * first check that it hasn't been started yet. Set the flag
+     * to indicate that the thread should execute.
      */
     private void startAddingBacteria() {
         this.addingBacteria = true;
-        bacteriaThread.start();
+        if (!bacteriaThread.isAlive()) {
+            bacteriaThread.start();
+        }
+
     }
 
     /**
