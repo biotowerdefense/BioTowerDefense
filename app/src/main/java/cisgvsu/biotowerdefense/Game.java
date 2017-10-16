@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Kelsey Brennan
  * 9/22/17
  */
-
 public class Game {
     /** List of towers. */
     private Vector<AntibioticTower> towers;

@@ -19,7 +19,7 @@ public class Control extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_fullscreen);
-
+        /*
         //Declare the buttons
         final Button stopStartButton = (Button)findViewById(R.id.stopStartButton);
         final Button tower0Button = (Button)findViewById(R.id.tower0Button);
@@ -120,5 +120,6 @@ public class Control extends Activity {
                 //open the library
             }
         });
+        */
     }
 }
