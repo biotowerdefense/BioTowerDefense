@@ -2,15 +2,19 @@ package cisgvsu.biotowerdefense;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 
 public class GameSurfaceView extends SurfaceView {
 
@@ -21,18 +25,30 @@ public class GameSurfaceView extends SurfaceView {
     private int screenHeight;
     private Bacteria bacteria;
 
+    public GameSurfaceView (Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
     public GameSurfaceView(Context context) {
         super(context);
+        init(context);
+    }
+
+    private void init(Context context) {
         // Find the screen size
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        ((Activity) getContext()).getWindowManager()
-                .getDefaultDisplay()
-                .getMetrics(displayMetrics);
-        this.screenHeight = displayMetrics.heightPixels;
-        this.screenWidth = displayMetrics.widthPixels;
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        //this.screenHeight = size.y;
+        //this.screenWidth = size.x;
+
+        this.screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+        this.screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
 
         // Get the bitmaps that we'll draw
-        this.bg = BitmapFactory.decodeResource(getResources(), R.drawable.tower_defense_bg);
+        this.bg = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
         this.bac = BitmapFactory.decodeResource(getResources(), R.drawable.bacteria);
 
         // Scale the background
@@ -129,9 +145,9 @@ public class GameSurfaceView extends SurfaceView {
         public void moveBacteria(Bacteria bacteria) {
             if (bacteria.getX() > -100) {
                 if ((bacteria.getX() > 925 && bacteria.getY() < 350) || bacteria.getY() > 750) {
-                    bacteria.setX(bacteria.getX() - 10);
+                    bacteria.setX(bacteria.getX() - 5);
                 } else {
-                    bacteria.setY(bacteria.getY() + 10);
+                    bacteria.setY(bacteria.getY() + 5);
                 }
             } else {
                 bacteria.setX(this.width);
