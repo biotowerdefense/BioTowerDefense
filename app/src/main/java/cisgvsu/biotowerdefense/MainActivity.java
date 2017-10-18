@@ -16,6 +16,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
 
+        final ImageView tower0 = (ImageView) findViewById(R.id.tower0);
+        tower0.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                tower0.setImageResource(R.drawable.tower);
+            }
+        });
+
         final ImageView tower1 = (ImageView) findViewById(R.id.tower1);
         tower1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -23,5 +30,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final ImageView tower2 = (ImageView) findViewById(R.id.tower2);
+        tower2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                tower2.setImageResource(R.drawable.tower);
+            }
+        });
+
+        final ImageView tower3 = (ImageView) findViewById(R.id.tower3);
+        tower3.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                tower3.setImageResource(R.drawable.tower);
+            }
+        });
+
+        final ImageView tower4 = (ImageView) findViewById(R.id.tower4);
+        tower4.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                tower4.setImageResource(R.drawable.tower);
+            }
+        });
     }
 }
