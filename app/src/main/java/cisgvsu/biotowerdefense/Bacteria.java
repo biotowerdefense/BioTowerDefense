@@ -21,6 +21,8 @@ public class Bacteria {
     /** Whether or not this bacteria is currently on the screen. */
     private boolean onScreen;
 
+    private boolean initialPositionSet;
+
     /** The value to be added to the player's score when this bacteria is killed. */
     private int value;
 
@@ -39,6 +41,7 @@ public class Bacteria {
         this.value = health;
         this.onScreen = false;
         this.exempt = null;
+        this.initialPositionSet = false;
     }
 
     /**
@@ -96,7 +99,11 @@ public class Bacteria {
      * @return
      */
     public boolean isOnScreen() {
-
+        if (x < -100) {
+            this.onScreen = false;
+        } else {
+            this.onScreen = true;
+        }
         return onScreen;
     }
 
@@ -145,5 +152,13 @@ public class Bacteria {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public boolean isInitialPositionSet() {
+        return this.initialPositionSet;
+    }
+
+    public void setInitialPositionSet(boolean isSet) {
+        this.initialPositionSet = isSet;
     }
 }

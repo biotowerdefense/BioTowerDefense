@@ -1,8 +1,6 @@
 package cisgvsu.biotowerdefense;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,11 +8,12 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+
+import java.util.ArrayList;
 
 public class GameSurfaceView extends SurfaceView {
 
@@ -98,14 +97,17 @@ public class GameSurfaceView extends SurfaceView {
         private Bacteria bac;
         private int width;
         private int height;
+        private Game game;
 
         public DrawingThread(SurfaceHolder holder, Bitmap bg, Bitmap bacBmp, Bacteria bac, int width, int height) {
             this.holder = holder;
             this.bg = bg;
             this.bacBmp = bacBmp;
-            this.bac = bac;
+            //this.bac = bac;
             this.width = width;
             this.height = height;
+            this.game = new Game();
+            game.startGame();
         }
 
         public void setRunnable(boolean run) {
@@ -138,20 +140,29 @@ public class GameSurfaceView extends SurfaceView {
         public void draw(Canvas canvas) {
             canvas.drawColor(0, PorterDuff.Mode.CLEAR);
             canvas.drawBitmap(bg, 0, 0, null);
-            canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
-            moveBacteria(bac);
+
+            ArrayList<Bacteria> allBacteria = game.getAllBacteria();
+            for (Bacteria bac : allBacteria) {
+                if (!bac.isInitialPositionSet()) {
+                    bac.setX(this.width + 10);
+                    bac.setY(300);
+                    bac.setInitialPositionSet(true);
+                }
+
+                canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
+                moveBacteria(bac);
+            }
         }
 
         public void moveBacteria(Bacteria bacteria) {
             if (bacteria.getX() > -100) {
-                if ((bacteria.getX() > 925 && bacteria.getY() < 350) || bacteria.getY() > 750) {
+                if ((bacteria.getX() > 925 && bacteria.getY() < 375) || bacteria.getY() > 750) {
                     bacteria.setX(bacteria.getX() - 5);
                 } else {
                     bacteria.setY(bacteria.getY() + 5);
                 }
             } else {
-                bacteria.setX(this.width);
-                bacteria.setY(300);
+                bacteria.setOnScreen(false);
             }
         }
     }

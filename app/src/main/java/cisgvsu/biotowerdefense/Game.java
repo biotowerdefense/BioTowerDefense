@@ -1,6 +1,9 @@
 package cisgvsu.biotowerdefense;
 
+import android.graphics.Point;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -52,10 +55,11 @@ public class Game {
      * and bacteria move.
      */
     public void startGame() {
+        addTower(AntibioticType.penicillin, 0);
         this.startAddingBacteria();
-        for (AntibioticTower t : towers) {
+        /*for (AntibioticTower t : towers) {
             this.activateTower(t);
-        }
+        }*/
     }
 
     /**
@@ -67,6 +71,22 @@ public class Game {
         for (AntibioticTower t : towers) {
             t.setShooting(false);
         }
+    }
+
+    /**
+     * Return all the bacteria in the game so their
+     * locations can be accessed to draw them.
+     *
+     * @return A list of all the bacteria.
+     */
+    public ArrayList<Bacteria> getAllBacteria() {
+        ArrayList<Bacteria> allBacteria = new ArrayList<>();
+        for (Queue<Bacteria> queue : bacteriaToTower.values()) {
+            for (Bacteria bacteria : queue) {
+                allBacteria.add(bacteria);
+            }
+        }
+        return allBacteria;
     }
 
     /**
@@ -177,7 +197,7 @@ public class Game {
      * is resistant to the antibiotic. There are several cases.
      *
      * Case 1: Bacteria type is already resistant to the antibiotic, and
-     * this individual one is not exempt. Return true.
+     * this individual one is too (aka not exempt). Return true.
      *
      * Case 2: Bacteria type is already resistant to the antibiotic, but this
      * individual was created before they were all resistant. Run algorithm.
@@ -364,11 +384,11 @@ public class Game {
         public void run() {
             while (addingBacteria) {
                 addBacteria(BacteriaType.staph);
-                for (AntibioticTower t : towers) {
+                /*for (AntibioticTower t : towers) {
                     if (bacteriaToTower.get(t).peek().outOfRange()) {
                         moveBacteriaToNextTower(t);
                     }
-                }
+                }*/
                 try {
                     sleep(1000);
                 } catch (Exception e) {
