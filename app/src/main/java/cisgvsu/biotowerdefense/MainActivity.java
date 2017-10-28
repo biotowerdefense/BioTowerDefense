@@ -1,5 +1,6 @@
 package cisgvsu.biotowerdefense;
 
+import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,13 +21,20 @@ public class MainActivity extends AppCompatActivity {
         tower0.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 tower0.setImageResource(R.drawable.tower);
+                //add a tower to place zero
+                // TODO: in future code call the store/inventory here to pick the correct tower.
+                // For now just use penicillin for everything
+                AntibioticTower towerZero = new AntibioticTower(AntibioticType.penicillin, 0);
             }
         });
 
         final ImageView tower1 = (ImageView) findViewById(R.id.tower1);
         tower1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                //if (tower1.get)
                 tower1.setImageResource(R.drawable.tower);
+                //add a tower to place one
+                AntibioticTower towerOne = new AntibioticTower(AntibioticType.penicillin, 1);
             }
         });
 
@@ -34,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         tower2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 tower2.setImageResource(R.drawable.tower);
+                //add a tower to place two
+                AntibioticTower towerTwo = new AntibioticTower(AntibioticType.penicillin, 2);
             }
         });
 
@@ -41,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         tower3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 tower3.setImageResource(R.drawable.tower);
+                //add a tower to place three
+                AntibioticTower towerThree = new AntibioticTower(AntibioticType.penicillin, 3);
             }
         });
 
@@ -48,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         tower4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 tower4.setImageResource(R.drawable.tower);
+                //add a tower to place four
+                AntibioticTower towerFour = new AntibioticTower(AntibioticType.penicillin, 4);
             }
         });
     }

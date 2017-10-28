@@ -166,6 +166,4 @@ public class GameSurfaceView extends SurfaceView {
             }
         }
     }
-
 }
-

@@ -300,12 +300,7 @@ public class Game {
         Bacteria bacteria = bacteriaToTower.get(tower).remove();
         int nextIndex = towers.indexOf(tower) + 1;
 
-        if (nextIndex > towers.size()-1) {
-            System.out.println("You lose!");
-            // TODO: Lose condition. There's no more towers to fight off bacteria
-            // This probably needs to be more complex in case the user adds another tower
-            // to fight off this bacteria. We could use a list of unassigned bacteria
-        } else {
+        if (!(nextIndex > towers.size()-1)) {
             AntibioticTower next = towers.get(nextIndex);
             bacteriaToTower.get(next).add(bacteria);
         }
@@ -384,11 +379,11 @@ public class Game {
         public void run() {
             while (addingBacteria) {
                 addBacteria(BacteriaType.staph);
-                /*for (AntibioticTower t : towers) {
-                    if (bacteriaToTower.get(t).peek().outOfRange()) {
+                for (AntibioticTower t : towers) {
+                    if (!t.inRange(bacteriaToTower.get(t).peek().getX())) {
                         moveBacteriaToNextTower(t);
                     }
-                }*/
+                }
                 try {
                     sleep(1000);
                 } catch (Exception e) {

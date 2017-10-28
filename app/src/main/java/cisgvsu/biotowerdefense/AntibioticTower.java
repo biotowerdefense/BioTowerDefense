@@ -1,5 +1,8 @@
 package cisgvsu.biotowerdefense;
 
+import android.content.res.Resources;
+import android.util.Range;
+
 /**
  * This class models an antibiotic "tower" that shoots
  * a dosage of a certain type of antibiotic at the different
@@ -9,6 +12,9 @@ package cisgvsu.biotowerdefense;
  */
 
 public class AntibioticTower {
+    int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+    int fifthWidth = screenWidth / 5;
+
     /** Type of antibiotic that this tower shoots. */
     private AntibioticType type;
 
@@ -20,6 +26,8 @@ public class AntibioticTower {
 
     /** Location of tower in game, 0 - 4 to begin with */
     private int location;
+    private int minRange;
+    private int maxRange;
 
     /** Whether or not the tower is shooting at bacteria (thread control). */
     private boolean shooting;
@@ -32,6 +40,8 @@ public class AntibioticTower {
         this.power = AntibioticType.getPower(type);
         this.cost = AntibioticType.getCost(type);
         this.location = 0;
+        this.maxRange = screenWidth;
+        this.minRange = screenWidth - fifthWidth;
     }
 
     /**
@@ -44,6 +54,25 @@ public class AntibioticTower {
         this.power = AntibioticType.getPower(type);
         this.cost = AntibioticType.getCost(type);
         this.location = location;
+
+        //set the reach of the tower
+        switch (location) {
+            case 0:
+                this.maxRange = screenWidth;
+                this.minRange = screenWidth - fifthWidth;
+            case 1:
+                this.maxRange = screenWidth - fifthWidth;
+                this.minRange = screenWidth - 2*fifthWidth;
+            case 2:
+                this.maxRange = screenWidth - 2*fifthWidth;
+                this.minRange = screenWidth - 3*fifthWidth;
+            case 3:
+                this.maxRange = screenWidth - 3*fifthWidth;
+                this.minRange = screenWidth - 4*fifthWidth;;
+            case 4:
+                this.maxRange = screenWidth = 4*fifthWidth;
+                this.minRange = 0;
+        }
     }
 
     /**
@@ -92,6 +121,19 @@ public class AntibioticTower {
      */
     public void setCost(int cost) {
         this.cost = cost;
+    }
+
+    /**
+     * Get whether or not the bacteria is in range of the tower
+     * @param x the x-coordinate of the bacteria
+     * @return True if it is in range, false otherwise
+     */
+    public boolean inRange(int x) {
+        if (x <= this.maxRange && x >= this.minRange) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
