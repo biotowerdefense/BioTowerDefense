@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,13 +17,6 @@ import android.view.WindowManager;
 import java.util.ArrayList;
 
 public class GameSurfaceView extends SurfaceView {
-
-    private SurfaceHolder holder;
-    private Bitmap bac;
-    private Bitmap bg;
-    private int screenWidth;
-    private int screenHeight;
-    private Bacteria bacteria;
 
     public GameSurfaceView (Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -43,26 +37,20 @@ public class GameSurfaceView extends SurfaceView {
         //this.screenHeight = size.y;
         //this.screenWidth = size.x;
 
-        this.screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-        this.screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+        int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+        int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
 
         // Get the bitmaps that we'll draw
-        this.bg = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
-        this.bac = BitmapFactory.decodeResource(getResources(), R.drawable.bacteria);
+        Bitmap bg = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
+        Bitmap bac = BitmapFactory.decodeResource(getResources(), R.drawable.bacteria);
 
         // Scale the background
-        this.bg = Bitmap.createScaledBitmap(this.bg, this.screenWidth, this.screenHeight, false);
+        bg = Bitmap.createScaledBitmap(bg, screenWidth, screenHeight, false);
 
-        // Make a bacteria object
-        this.bacteria = new Bacteria(BacteriaType.pneumonia, 10);
-        this.bacteria.setX(this.screenWidth);
-        this.bacteria.setY(300);
-
-        final DrawingThread thread = new DrawingThread(getHolder(), this.bg, this.bac,
-                this.bacteria, this.screenWidth, this.screenHeight);
+        final DrawingThread thread = new DrawingThread(getHolder(), bg, bac, screenWidth, screenHeight);
 
         // Set up SurfaceHolder for drawing
-        holder = getHolder();
+        SurfaceHolder holder = getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
@@ -94,16 +82,14 @@ public class GameSurfaceView extends SurfaceView {
         private boolean run = false;
         private Bitmap bg;
         private Bitmap bacBmp;
-        private Bacteria bac;
         private int width;
         private int height;
         private Game game;
 
-        public DrawingThread(SurfaceHolder holder, Bitmap bg, Bitmap bacBmp, Bacteria bac, int width, int height) {
+        public DrawingThread(SurfaceHolder holder, Bitmap bg, Bitmap bacBmp, int width, int height) {
             this.holder = holder;
             this.bg = bg;
             this.bacBmp = bacBmp;
-            //this.bac = bac;
             this.width = width;
             this.height = height;
             this.game = new Game();
@@ -152,6 +138,8 @@ public class GameSurfaceView extends SurfaceView {
                 canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
                 moveBacteria(bac);
             }
+            Log.d("BAC", "" + allBacteria.size());
+
         }
 
         public void moveBacteria(Bacteria bacteria) {

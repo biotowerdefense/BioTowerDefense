@@ -25,6 +25,8 @@ public class Game {
     /** Mapping of the bacteria that are in each tower's range.  */
     private ConcurrentHashMap<AntibioticTower, Queue<Bacteria>> bacteriaToTower;
 
+    private Vector<Bacteria> unassignedBacteria;
+
     /** Antibiotic resistance for new bacteria. */
     private ConcurrentHashMap<BacteriaType, List<AntibioticType>> resistances;
 
@@ -48,6 +50,7 @@ public class Game {
         towers = new Vector<>(NUM_TOWERS);
         bacteriaToTower = new ConcurrentHashMap<>();
         resistances = new ConcurrentHashMap<>();
+        unassignedBacteria = new Vector<>();
     }
 
     /**
@@ -85,6 +88,9 @@ public class Game {
             for (Bacteria bacteria : queue) {
                 allBacteria.add(bacteria);
             }
+        }
+        for (Bacteria bacteria : unassignedBacteria) {
+            allBacteria.add(bacteria);
         }
         return allBacteria;
     }
@@ -257,7 +263,6 @@ public class Game {
      * @return True if resistant, false otherwise.
      */
     private boolean resistanceAlgorithm(BacteriaType bacteriaType, AntibioticType antibiotic) {
-        // TODO: Implement me!
         double chance = 0;
         switch (antibiotic) {
             case penicillin:
@@ -303,6 +308,8 @@ public class Game {
         if (!(nextIndex > towers.size()-1)) {
             AntibioticTower next = towers.get(nextIndex);
             bacteriaToTower.get(next).add(bacteria);
+        } else {
+            unassignedBacteria.add(bacteria);
         }
     }
 
