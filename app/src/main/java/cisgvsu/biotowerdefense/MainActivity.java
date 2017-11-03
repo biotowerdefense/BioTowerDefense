@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fullscreen);
 
         final ImageView tower0 = (ImageView) findViewById(R.id.tower0);
+        if (tower0 != null)
         tower0.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 tower0.setImageResource(R.drawable.tower);
@@ -29,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final ImageView tower1 = (ImageView) findViewById(R.id.tower1);
-        tower1.setOnClickListener(new View.OnClickListener() {
+        if (tower1 != null)
+            tower1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //if (tower1.get)
                 tower1.setImageResource(R.drawable.tower);
@@ -39,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final ImageView tower2 = (ImageView) findViewById(R.id.tower2);
-        tower2.setOnClickListener(new View.OnClickListener() {
+        if (tower2 != null)
+            tower2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 tower2.setImageResource(R.drawable.tower);
                 //add a tower to place two
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final ImageView tower3 = (ImageView) findViewById(R.id.tower3);
+        if (tower3 != null)
         tower3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 tower3.setImageResource(R.drawable.tower);
@@ -57,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final ImageView tower4 = (ImageView) findViewById(R.id.tower4);
+        if (tower4 != null)
         tower4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 tower4.setImageResource(R.drawable.tower);
@@ -64,5 +69,6 @@ public class MainActivity extends AppCompatActivity {
                 AntibioticTower towerFour = new AntibioticTower(AntibioticType.penicillin, 4);
             }
         });
+
     }
 }
