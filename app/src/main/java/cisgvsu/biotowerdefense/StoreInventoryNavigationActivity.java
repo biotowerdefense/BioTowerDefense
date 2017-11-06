@@ -1,5 +1,6 @@
 package cisgvsu.biotowerdefense;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,10 @@ public class StoreInventoryNavigationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_store_inventory);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Get the tower position we were sent
+        Intent intent = getIntent();
+        int position = intent.getIntExtra(MainActivity.EXTRA_TOWER_POSITION, 0);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Store"));

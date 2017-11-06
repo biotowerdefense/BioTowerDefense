@@ -12,6 +12,8 @@ import android.widget.ImageView;
  */
 public class MainActivity extends AppCompatActivity {
 
+    public static final String EXTRA_TOWER_POSITION = "cisgvsu.biotowerdefense.TOWER_POSITION";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         final ImageView tower0 = (ImageView) findViewById(R.id.tower0);
         tower0.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                launchStore();
+                launchStore(0);
                 tower0.setImageResource(R.drawable.tower);
                 //add a tower to place zero
                 // TODO: in future code call the store/inventory here to pick the correct tower.
@@ -67,8 +69,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void launchStore() {
+    /**
+     * Launch the store/inventory screen and pass to it which tower was pressed.
+     * @param position
+     */
+    public void launchStore(int position) {
         Intent intent = new Intent(this, StoreInventoryNavigationActivity.class);
+        intent.putExtra(EXTRA_TOWER_POSITION, position);
         startActivity(intent);
     }
 }
