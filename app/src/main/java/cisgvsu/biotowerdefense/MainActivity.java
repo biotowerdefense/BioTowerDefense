@@ -1,6 +1,6 @@
 package cisgvsu.biotowerdefense;
 
-import android.content.res.Resources;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         final ImageView tower0 = (ImageView) findViewById(R.id.tower0);
         tower0.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                launchStore();
                 tower0.setImageResource(R.drawable.tower);
                 //add a tower to place zero
                 // TODO: in future code call the store/inventory here to pick the correct tower.
@@ -64,5 +65,10 @@ public class MainActivity extends AppCompatActivity {
                 AntibioticTower towerFour = new AntibioticTower(AntibioticType.penicillin, 4);
             }
         });
+    }
+
+    public void launchStore() {
+        Intent intent = new Intent(this, StoreInventoryNavigationActivity.class);
+        startActivity(intent);
     }
 }

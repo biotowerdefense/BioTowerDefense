@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
@@ -124,21 +125,23 @@ public class GameSurfaceView extends SurfaceView {
          * @param canvas
          */
         public void draw(Canvas canvas) {
-            canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-            canvas.drawBitmap(bg, 0, 0, null);
+            if (canvas != null) {
+                canvas.drawColor(Color.BLACK);
+                canvas.drawBitmap(bg, 0, 0, null);
 
-            ArrayList<Bacteria> allBacteria = game.getAllBacteria();
-            for (Bacteria bac : allBacteria) {
-                if (!bac.isInitialPositionSet()) {
-                    bac.setX(this.width + 10);
-                    bac.setY(300);
-                    bac.setInitialPositionSet(true);
+                ArrayList<Bacteria> allBacteria = game.getAllBacteria();
+                for (Bacteria bac : allBacteria) {
+                    if (!bac.isInitialPositionSet()) {
+                        bac.setX(this.width + 10);
+                        bac.setY(300);
+                        bac.setInitialPositionSet(true);
+                    }
+
+                    canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
+                    moveBacteria(bac);
                 }
-
-                canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
-                moveBacteria(bac);
+                Log.d("BAC", "" + allBacteria.size());
             }
-            Log.d("BAC", "" + allBacteria.size());
 
         }
 
