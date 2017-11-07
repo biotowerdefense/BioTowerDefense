@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
@@ -87,7 +88,16 @@ public class GameSurfaceView extends SurfaceView {
         private int height;
         private Game game;
 
+        //Variables for displaying score
+        private Paint paintText;
+        private int renderedScore;
+        private String renderedScoreString;
+
         public DrawingThread(SurfaceHolder holder, Bitmap bg, Bitmap bacBmp, int width, int height) {
+            this.paintText = new Paint();
+            paintText.setTextSize(50);
+            paintText.setColor(Color.DKGRAY);
+
             this.holder = holder;
             this.bg = bg;
             this.bacBmp = bacBmp;
@@ -136,13 +146,12 @@ public class GameSurfaceView extends SurfaceView {
                         bac.setY(300);
                         bac.setInitialPositionSet(true);
                     }
-
                     canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
                     moveBacteria(bac);
                 }
+                canvas.drawText(getScoreString(), 100, 100, paintText);
                 Log.d("BAC", "" + allBacteria.size());
             }
-
         }
 
         public void moveBacteria(Bacteria bacteria) {
@@ -155,6 +164,15 @@ public class GameSurfaceView extends SurfaceView {
             } else {
                 bacteria.setOnScreen(false);
             }
+        }
+
+        private String getScoreString() {
+            //Only create new score string for new scores to help with garbage collector problems
+            if (game.getScore() != this.renderedScore || this.renderedScoreString == null) {
+                this.renderedScore = game.getScore();
+                this.renderedScoreString = "Score: " + game.getScore();
+            }
+            return renderedScoreString;
         }
     }
 }

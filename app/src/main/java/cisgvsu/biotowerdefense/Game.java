@@ -19,28 +19,26 @@ import java.util.concurrent.ConcurrentHashMap;
  * 9/22/17
  */
 public class Game {
-    /** List of towers. */
-    private Vector<AntibioticTower> towers;
-
-    /** Mapping of the bacteria that are in each tower's range.  */
-    private ConcurrentHashMap<AntibioticTower, Queue<Bacteria>> bacteriaToTower;
-
-    private Vector<Bacteria> unassignedBacteria;
-
-    /** Antibiotic resistance for new bacteria. */
-    private ConcurrentHashMap<BacteriaType, List<AntibioticType>> resistances;
-
     /** The number of towers allowed in the game. */
     private static final int NUM_TOWERS = 5;
-
+    /** List of towers. */
+    private Vector<AntibioticTower> towers;
+    /** Mapping of the bacteria that are in each tower's range.  */
+    private ConcurrentHashMap<AntibioticTower, Queue<Bacteria>> bacteriaToTower;
+    private Vector<Bacteria> unassignedBacteria;
+    /** Antibiotic resistance for new bacteria. */
+    private ConcurrentHashMap<BacteriaType, List<AntibioticType>> resistances;
     /** The thread that adds bacteria to the game. */
     private BacteriaThread bacteriaThread = new BacteriaThread();
 
     /** The set of threads that make the towers shoot. */
     private List<TowerThread> towerThreads = new ArrayList<>();
 
-    /** Control whether te game should be running the thread to add bacteria. */
+    /** Control whether the game should be running the thread to add bacteria. */
     private boolean addingBacteria;
+
+    /** Keep track of the current score */
+    private int score;
 
     /**
      * Creates a new game instance by instantiating the
@@ -189,6 +187,8 @@ public class Game {
 
             if (power >= health) {
                 bacteria.remove();
+                //get a score bonus for killing a bacteria
+                score++;
                 return true;
             } else {
                 first.setHealth(health - power);
@@ -344,6 +344,14 @@ public class Game {
     }
 
     /**
+     * Get the current score
+     * @return current game score
+     */
+    public int getScore() {
+        return score;
+    }
+
+    /**
      * Thread to shoot the tower.
      */
     private class TowerThread extends Thread {
@@ -385,6 +393,8 @@ public class Game {
         @Override
         public void run() {
             while (addingBacteria) {
+                //Add to score once a second while game is running (aka bacteria is being added)
+                score++;
                 addBacteria(BacteriaType.staph);
                 for (AntibioticTower t : towers) {
                     if (!t.inRange(bacteriaToTower.get(t).peek().getX())) {
