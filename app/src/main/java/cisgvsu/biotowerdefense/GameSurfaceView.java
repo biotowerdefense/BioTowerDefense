@@ -20,6 +20,9 @@ import java.util.ArrayList;
 
 public class GameSurfaceView extends SurfaceView {
 
+    private Game game;
+    DrawingThread thread;
+
     public GameSurfaceView (Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
@@ -49,7 +52,7 @@ public class GameSurfaceView extends SurfaceView {
         // Scale the background
         bg = Bitmap.createScaledBitmap(bg, screenWidth, screenHeight, false);
 
-        final DrawingThread thread = new DrawingThread(getHolder(), bg, bac, screenWidth, screenHeight);
+        thread = new DrawingThread(getHolder(), bg, bac, screenWidth, screenHeight);
 
         // Set up SurfaceHolder for drawing
         SurfaceHolder holder = getHolder();
@@ -78,6 +81,11 @@ public class GameSurfaceView extends SurfaceView {
         });
     }
 
+    public void setGame(Game g) {
+        this.game = g;
+        this.thread.setGame(g);
+    }
+
     class DrawingThread extends Thread {
         private SurfaceHolder holder;
         private Canvas canvas;
@@ -88,7 +96,7 @@ public class GameSurfaceView extends SurfaceView {
         private int height;
         private Game game;
 
-        //Variables for displaying score
+        // Variables for displaying score
         private Paint paintText;
         private int renderedScore;
         private String renderedScoreString;
@@ -103,12 +111,16 @@ public class GameSurfaceView extends SurfaceView {
             this.bacBmp = bacBmp;
             this.width = width;
             this.height = height;
-            this.game = new Game();
-            game.startGame();
+            //this.game = new Game();
+            //game.startGame();
         }
 
         public void setRunnable(boolean run) {
             this.run = run;
+        }
+
+        public void setGame(Game g) {
+            this.game = g;
         }
 
         @Override
@@ -139,18 +151,21 @@ public class GameSurfaceView extends SurfaceView {
                 canvas.drawColor(Color.BLACK);
                 canvas.drawBitmap(bg, 0, 0, null);
 
-                ArrayList<Bacteria> allBacteria = game.getAllBacteria();
-                for (Bacteria bac : allBacteria) {
-                    if (!bac.isInitialPositionSet()) {
-                        bac.setX(this.width + 10);
-                        bac.setY(300);
-                        bac.setInitialPositionSet(true);
+                if (this.game != null) {
+                    ArrayList<Bacteria> allBacteria = game.getAllBacteria();
+                    for (Bacteria bac : allBacteria) {
+                        if (!bac.isInitialPositionSet()) {
+                            bac.setX(this.width + 10);
+                            bac.setY(300);
+                            bac.setInitialPositionSet(true);
+                        }
+                        canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
+                        moveBacteria(bac);
                     }
-                    canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
-                    moveBacteria(bac);
+                    Log.d("BAC", "" + allBacteria.size());
                 }
+
                 canvas.drawText(getScoreString(), 100, 100, paintText);
-                Log.d("BAC", "" + allBacteria.size());
             }
         }
 

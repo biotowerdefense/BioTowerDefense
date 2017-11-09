@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 /**
@@ -18,6 +19,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
+
+        // Create a game
+        final Game game = new Game();
+        ((GameSurfaceView) findViewById(R.id.surfaceView)).setGame(game);
+
+        final Button startStop = (Button) findViewById(R.id.startStop);
+        startStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start the game if it was paused, otherwise pause it
+                if (game.isPaused()) {
+                    game.startGame();
+                    startStop.setText(R.string.pauseGame);
+                } else {
+                    game.stopGame();
+                    startStop.setText(R.string.startGame);
+                }
+            }
+        });
 
         final ImageView tower0 = (ImageView) findViewById(R.id.tower0);
         tower0.setOnClickListener(new View.OnClickListener() {
@@ -34,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         final ImageView tower1 = (ImageView) findViewById(R.id.tower1);
         tower1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                launchStore(1);
                 //if (tower1.get)
                 tower1.setImageResource(R.drawable.tower);
                 //add a tower to place one
@@ -44,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         final ImageView tower2 = (ImageView) findViewById(R.id.tower2);
         tower2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                launchStore(2);
                 tower2.setImageResource(R.drawable.tower);
                 //add a tower to place two
                 AntibioticTower towerTwo = new AntibioticTower(AntibioticType.penicillin, 2);
@@ -53,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         final ImageView tower3 = (ImageView) findViewById(R.id.tower3);
         tower3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                launchStore(3);
                 tower3.setImageResource(R.drawable.tower);
                 //add a tower to place three
                 AntibioticTower towerThree = new AntibioticTower(AntibioticType.penicillin, 3);
@@ -62,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         final ImageView tower4 = (ImageView) findViewById(R.id.tower4);
         tower4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                launchStore(4);
                 tower4.setImageResource(R.drawable.tower);
                 //add a tower to place four
                 AntibioticTower towerFour = new AntibioticTower(AntibioticType.penicillin, 4);

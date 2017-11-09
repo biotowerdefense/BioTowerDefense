@@ -40,6 +40,9 @@ public class Game {
     /** Keep track of the current score */
     private int score;
 
+    /** For other classes to see if the game is paused or not. */
+    private boolean isPaused = true;
+
     /**
      * Creates a new game instance by instantiating the
      * fields, making them all thread-safe.
@@ -58,6 +61,7 @@ public class Game {
     public void startGame() {
         addTower(AntibioticType.penicillin, 0);
         this.startAddingBacteria();
+        this.isPaused = false;
         /*for (AntibioticTower t : towers) {
             this.activateTower(t);
         }*/
@@ -69,10 +73,20 @@ public class Game {
      */
     public void stopGame() {
         this.addingBacteria = false;
+        this.isPaused = true;
         for (AntibioticTower t : towers) {
             t.setShooting(false);
         }
     }
+
+    /**
+     * Get the value of the isPaused variable.
+     * @return True if paused, false otherwise.
+     */
+    public boolean isPaused() {
+        return this.isPaused;
+    }
+
 
     /**
      * Return all the bacteria in the game so their
