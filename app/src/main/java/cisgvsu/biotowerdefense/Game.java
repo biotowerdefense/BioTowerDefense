@@ -1,11 +1,13 @@
 package cisgvsu.biotowerdefense;
 
 import android.graphics.Point;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
 import java.util.Queue;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Kelsey Brennan
  * 9/22/17
  */
-public class Game {
+public class Game extends Observable {
     /** The number of towers allowed in the game. */
     private static final int NUM_TOWERS = 5;
     /** List of towers. */
@@ -62,9 +64,9 @@ public class Game {
         addTower(AntibioticType.penicillin, 0);
         this.startAddingBacteria();
         this.isPaused = false;
-        /*for (AntibioticTower t : towers) {
+        for (AntibioticTower t : towers) {
             this.activateTower(t);
-        }*/
+        }
     }
 
     /**
@@ -252,17 +254,23 @@ public class Game {
                 // Mark any bacteria of this type that are already created as being exempt
                 // to this antibiotic
                 for (AntibioticTower t : bacteriaToTower.keySet()) {
-                    Bacteria b[] = (Bacteria[]) bacteriaToTower.get(t).toArray();
-                    for (int i = 0; i < b.length; i++) {
-                        if (b[i].getType().equals(bacteria.getType())) {
-                            b[i].setExempt(antibiotic);
+                    Object obj[] = bacteriaToTower.get(t).toArray();
+                    for (int i = 0; i < obj.length; i++) {
+                        Bacteria b = (Bacteria) obj[i];
+                        if (b.getType().equals(bacteria.getType())) {
+                            b.setExempt(antibiotic);
                         }
                     }
                 }
 
                 // TODO: Notify control class that bacteria became resistant
+                // Call setChanged in Observable & notify observers
+                setChanged();
+                notifyObservers(bacteria.getType() + " has become resistant to " + antibiotic);
+                Log.d("tag", "Resistant? true");
                 return true;
             } else {
+                Log.d("tag", "Resistant? false");
                 return false;
             }
         }
@@ -281,6 +289,7 @@ public class Game {
         switch (antibiotic) {
             case penicillin:
                 chance = 0.03;
+                //chance = 0.9;
                 break;
             case vancomycin:
                 chance = 0.01;
@@ -354,7 +363,6 @@ public class Game {
         if (!bacteriaThread.isAlive()) {
             bacteriaThread.start();
         }
-
     }
 
     /**

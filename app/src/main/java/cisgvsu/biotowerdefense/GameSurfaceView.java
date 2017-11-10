@@ -1,6 +1,7 @@
 package cisgvsu.biotowerdefense;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -17,14 +19,18 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 public class GameSurfaceView extends SurfaceView {
 
     private Game game;
     DrawingThread thread;
+    Context context;
 
     public GameSurfaceView (Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         init(context);
     }
 
@@ -162,7 +168,7 @@ public class GameSurfaceView extends SurfaceView {
                         canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
                         moveBacteria(bac);
                     }
-                    Log.d("BAC", "" + allBacteria.size());
+                    //Log.d("BAC", "" + allBacteria.size());
                 }
 
                 canvas.drawText(getScoreString(), 100, 100, paintText);

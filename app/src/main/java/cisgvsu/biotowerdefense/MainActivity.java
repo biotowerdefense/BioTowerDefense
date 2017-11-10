@@ -1,29 +1,37 @@
 package cisgvsu.biotowerdefense;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Observer {
 
     public static final String EXTRA_TOWER_POSITION = "cisgvsu.biotowerdefense.TOWER_POSITION";
+    public final Game game = new Game();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
 
-        // Create a game
-        final Game game = new Game();
+        // Add ourselves as an observer, and then pass the game object to the view
+        this.game.addObserver(this);
         ((GameSurfaceView) findViewById(R.id.surfaceView)).setGame(game);
 
+        // Control starting and pausing the game
         final Button startStop = (Button) findViewById(R.id.startStop);
         startStop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 //add a tower to place zero
                 // TODO: in future code call the store/inventory here to pick the correct tower.
                 // For now just use penicillin for everything
-                AntibioticTower towerZero = new AntibioticTower(AntibioticType.penicillin, 0);
+                game.addTower(AntibioticType.penicillin, 0);
             }
         });
 
@@ -58,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 //if (tower1.get)
                 tower1.setImageResource(R.drawable.tower);
                 //add a tower to place one
-                AntibioticTower towerOne = new AntibioticTower(AntibioticType.penicillin, 1);
+                game.addTower(AntibioticType.penicillin, 1);
             }
         });
 
@@ -68,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 launchStore(2);
                 tower2.setImageResource(R.drawable.tower);
                 //add a tower to place two
-                AntibioticTower towerTwo = new AntibioticTower(AntibioticType.penicillin, 2);
+                game.addTower(AntibioticType.penicillin, 2);
             }
         });
 
@@ -78,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 launchStore(3);
                 tower3.setImageResource(R.drawable.tower);
                 //add a tower to place three
-                AntibioticTower towerThree = new AntibioticTower(AntibioticType.penicillin, 3);
+                game.addTower(AntibioticType.penicillin, 3);
             }
         });
 
@@ -88,18 +96,70 @@ public class MainActivity extends AppCompatActivity {
                 launchStore(4);
                 tower4.setImageResource(R.drawable.tower);
                 //add a tower to place four
-                AntibioticTower towerFour = new AntibioticTower(AntibioticType.penicillin, 4);
+                game.addTower(AntibioticType.penicillin, 4);
             }
         });
     }
 
     /**
      * Launch the store/inventory screen and pass to it which tower was pressed.
-     * @param position
+     * @param position The tower that was pressed.
      */
     public void launchStore(int position) {
         Intent intent = new Intent(this, StoreInventoryNavigationActivity.class);
         intent.putExtra(EXTRA_TOWER_POSITION, position);
         startActivity(intent);
+    }
+
+
+    /**
+     * If we get updated from the game that something has become resistant,
+     * show a dialog alerting the user.
+     * @param o Observable object we got message from
+     * @param arg Arg from game
+     */
+    @Override
+    public void update(Observable o, Object arg) {
+        Log.d("tag", (String) arg);
+        final String msg = (String) arg;
+
+        // We have to run this on the UI thread to avoid errors
+        new Thread() {
+            public void run() {
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            // Pause game, show dialog
+                            game.stopGame();
+                            getDialog(msg).show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }.start();
+    }
+
+    /**
+     * Create a dialog that shows a message.
+     * @param msg Message to be shown in dialog.
+     * @return The dialog.
+     */
+    private AlertDialog getDialog(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(msg);
+
+        // Add button to handle when user wants to place the tower
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Restart game on close
+                game.startGame();
+            }
+        });
+
+        return builder.create();
     }
 }
