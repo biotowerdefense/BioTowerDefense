@@ -20,12 +20,21 @@ import java.util.Observer;
 public class MainActivity extends AppCompatActivity implements Observer {
 
     public static final String EXTRA_TOWER_POSITION = "cisgvsu.biotowerdefense.TOWER_POSITION";
+    public static final String EXTRA_INVENTORY = "cisgvsu.biotowerdefense.EXTRA_INVENTORY";
     public final Game game = new Game();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
+
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            String tower = extras.getString(InventoryFragment.EXTRA_TOWER_TO_PLACE);
+            int position = extras.getInt(InventoryFragment.EXTRA_TOWER_POSITION);
+            Log.d("tag", "Tower name: " + tower + " tower position: " + position);
+        }
 
         // Add ourselves as an observer, and then pass the game object to the view
         this.game.addObserver(this);
@@ -38,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             public void onClick(View v) {
                 // Start the game if it was paused, otherwise pause it
                 if (game.isPaused()) {
-                    game.startGame();
+                    game.restartGame();
                     startStop.setText(R.string.pauseGame);
                 } else {
                     game.stopGame();
@@ -55,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 //add a tower to place zero
                 // TODO: in future code call the store/inventory here to pick the correct tower.
                 // For now just use penicillin for everything
-                game.addTower(AntibioticType.penicillin, 0);
+                //game.addTower(AntibioticType.penicillin, 0);
             }
         });
 
@@ -64,9 +73,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
             public void onClick(View v) {
                 launchStore(1);
                 //if (tower1.get)
-                tower1.setImageResource(R.drawable.tower);
+                //tower1.setImageResource(R.drawable.tower);
                 //add a tower to place one
-                game.addTower(AntibioticType.penicillin, 1);
+                //game.addTower(AntibioticType.penicillin, 1);
             }
         });
 
@@ -74,9 +83,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
         tower2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 launchStore(2);
-                tower2.setImageResource(R.drawable.tower);
+                //tower2.setImageResource(R.drawable.tower);
                 //add a tower to place two
-                game.addTower(AntibioticType.penicillin, 2);
+                //game.addTower(AntibioticType.penicillin, 2);
             }
         });
 
@@ -84,9 +93,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
         tower3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 launchStore(3);
-                tower3.setImageResource(R.drawable.tower);
+                //tower3.setImageResource(R.drawable.tower);
                 //add a tower to place three
-                game.addTower(AntibioticType.penicillin, 3);
+               // game.addTower(AntibioticType.penicillin, 3);
             }
         });
 
@@ -94,9 +103,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
         tower4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 launchStore(4);
-                tower4.setImageResource(R.drawable.tower);
+                //tower4.setImageResource(R.drawable.tower);
                 //add a tower to place four
-                game.addTower(AntibioticType.penicillin, 4);
+                //game.addTower(AntibioticType.penicillin, 4);
             }
         });
     }
@@ -108,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public void launchStore(int position) {
         Intent intent = new Intent(this, StoreInventoryNavigationActivity.class);
         intent.putExtra(EXTRA_TOWER_POSITION, position);
+        intent.putStringArrayListExtra(EXTRA_INVENTORY, game.getInventoryAsStrings());
         startActivity(intent);
     }
 

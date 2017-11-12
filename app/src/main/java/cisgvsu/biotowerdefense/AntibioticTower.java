@@ -57,6 +57,10 @@ public class AntibioticTower {
 
         //set the reach of the tower
         switch (location) {
+            // -1 means it's just in our inventory, no reach
+            case -1:
+                this.maxRange = Integer.MIN_VALUE;
+                this.minRange = Integer.MIN_VALUE;
             case 0:
                 this.maxRange = screenWidth;
                 this.minRange = screenWidth - fifthWidth;
@@ -73,6 +77,14 @@ public class AntibioticTower {
                 this.maxRange = screenWidth = 4*fifthWidth;
                 this.minRange = 0;
         }
+    }
+
+    public int getLocation() {
+        return this.location;
+    }
+
+    public void setLocation(int l) {
+        this.location = l;
     }
 
     /**

@@ -2,23 +2,15 @@ package cisgvsu.biotowerdefense;
 
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
-import android.widget.TextView;
+import java.util.ArrayList;
 
 public class StoreInventoryNavigationActivity extends AppCompatActivity {
 
@@ -29,9 +21,10 @@ public class StoreInventoryNavigationActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Get the tower position we were sent
+        // Get the tower position we were sent & the contents of the inventory
         Intent intent = getIntent();
         int position = intent.getIntExtra(MainActivity.EXTRA_TOWER_POSITION, 0);
+        ArrayList<String> strInventory = intent.getStringArrayListExtra(MainActivity.EXTRA_INVENTORY);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Store"));
@@ -41,9 +34,16 @@ public class StoreInventoryNavigationActivity extends AppCompatActivity {
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
+
+        // Build bundle to set position and inventory
+        Bundle bundle = new Bundle();
+        bundle.putInt(MainActivity.EXTRA_TOWER_POSITION, position);
+        bundle.putStringArrayList(MainActivity.EXTRA_INVENTORY, strInventory);
+        adapter.setBundle(bundle);
+
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());

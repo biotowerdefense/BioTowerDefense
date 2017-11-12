@@ -45,28 +45,45 @@ public class Game extends Observable {
     /** For other classes to see if the game is paused or not. */
     private boolean isPaused = true;
 
+    /** All the towers we've purchased. */
+    private ArrayList<AntibioticTower> inventory;
+
     /**
      * Creates a new game instance by instantiating the
      * fields, making them all thread-safe.
      */
     public Game() {
+        // Instantiate lists
         towers = new Vector<>(NUM_TOWERS);
         bacteriaToTower = new ConcurrentHashMap<>();
         resistances = new ConcurrentHashMap<>();
         unassignedBacteria = new Vector<>();
+        inventory = new ArrayList<>();
+
+        // Start the game
+        this.startGame();
     }
 
     /**
-     * Start the game by making the towers shoot
-     * and bacteria move.
+     * Start the game by giving one freebie penicillin tower
+     * in the inventory.
      */
     public void startGame() {
-        addTower(AntibioticType.penicillin, 0);
+        AntibioticTower freebie = new AntibioticTower(AntibioticType.penicillin, -1);
+        this.inventory.add(freebie);
+    }
+
+    /**
+     * Add bacteria and make the towers shoot.
+     */
+    public void restartGame() {
         this.startAddingBacteria();
-        this.isPaused = false;
-        for (AntibioticTower t : towers) {
-            this.activateTower(t);
+        if (towers != null && towers.size() > 0) {
+            for (AntibioticTower t : towers) {
+                this.activateTower(t);
+            }
         }
+        this.isPaused = false;
     }
 
     /**
@@ -109,34 +126,68 @@ public class Game extends Observable {
         return allBacteria;
     }
 
+
+    /**
+     * Add this tower to our inventory, location = -1 to indicate it's in inventory.
+     * @param type Type of tower to buy.
+     * @return The new inventory list.
+     */
+    public ArrayList<AntibioticTower> buyTower(AntibioticType type) {
+        this.inventory.add(new AntibioticTower(type, -1));
+        return this.inventory;
+    }
+
+
+    /**
+     * Get our inventory.
+     * @return The list of towers we've purchased.
+     */
+    public ArrayList<AntibioticTower> getInventory() {
+        return this.inventory;
+    }
+
+    public ArrayList<String> getInventoryAsStrings() {
+        ArrayList<String> strInventory = new ArrayList<>();
+        for (AntibioticTower t : inventory) {
+            String placed = "true";
+            if (t.getLocation() == -1) {
+                placed = "false";
+            }
+            String type = AntibioticType.toString(t.getType());
+            Log.d("tag", type + ": " + placed);
+            strInventory.add(type + ": " + placed);
+        }
+        Log.d("tag", "Size: " +inventory.size());
+        return strInventory;
+    }
+
     /**
      * Add a new tower to the game with the specified type and in the given
      * location, replacing any existing tower in that location and taking on
      * its list of bacteria.
      *
-     * @param type Type of antibiotic for the tower to be added
-     * @param location Position of the tower
+     * @param tower The tower we're adding
      * @return The updated list of towers in the game, null if location is invalid.
      */
-    public Vector<AntibioticTower> addTower(AntibioticType type, int location) {
+    public Vector<AntibioticTower> addTower(AntibioticTower tower, int newLocation) {
         // Make sure location is valid
-        if (location > NUM_TOWERS - 1 || location < 0) {
+        if (newLocation > NUM_TOWERS - 1 || newLocation < 0) {
             return null;
         } else {
             // Get rid of tower currently at that location if it exists
             AntibioticTower oldTower = null;
-            if (!towers.isEmpty() && towers.get(location) != null) {
-                oldTower = towers.remove(location);
+            if (!towers.isEmpty() && towers.get(newLocation) != null) {
+                oldTower = towers.remove(newLocation);
+                oldTower.setLocation(-1); // Back into inventory
 
                 // Stop shooting thread for this tower
-                towerThreads.remove(location);
+                towerThreads.remove(newLocation);
                 oldTower.setShooting(false);
             }
 
             // Make a new tower and add it to the list
-            AntibioticTower newTower =  new AntibioticTower(type, location);
-            towers.add(location, newTower);
-            towerThreads.add(location, new TowerThread(newTower));
+            towers.add(newLocation, tower);
+            towerThreads.add(newLocation, new TowerThread(tower));
 
             // Get any bacteria that may have belonged to the tower previously in this
             // location and remove it from the mapping
@@ -146,7 +197,7 @@ public class Game extends Observable {
             }
 
             // Put the new tower in the mapping to its bacteria
-            bacteriaToTower.put(newTower, bacteriaList);
+            bacteriaToTower.put(tower, bacteriaList);
             return towers;
         }
     }
@@ -313,8 +364,12 @@ public class Game extends Observable {
         Bacteria bacteria = new Bacteria(type, 1);
 
         // Add it to the first tower's queue
-        AntibioticTower firstTower = towers.get(0);
-        bacteriaToTower.get(firstTower).add(bacteria);
+        if (towers.size() > 0) {
+            AntibioticTower firstTower = towers.get(0);
+            bacteriaToTower.get(firstTower).add(bacteria);
+        } else {
+            unassignedBacteria.add(bacteria);
+        }
     }
 
     /**

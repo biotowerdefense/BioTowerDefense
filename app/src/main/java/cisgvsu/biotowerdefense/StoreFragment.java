@@ -60,6 +60,12 @@ public class StoreFragment extends android.support.v4.app.Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Get the stuff that the main navigation activity sent us
+        if (getArguments() != null) {
+            int position = getArguments().getInt(MainActivity.EXTRA_TOWER_POSITION);
+            ArrayList<String> strInventory = getArguments().getStringArrayList(MainActivity.EXTRA_INVENTORY);
+        }
+
         // Get the view for this fragment
         View view = inflater.inflate(R.layout.store_fragment, container, false);
 
@@ -68,7 +74,8 @@ public class StoreFragment extends android.support.v4.app.Fragment {
         list.add("Tower 1");
         list.add("Tower 2");
         list.add("Tower 3");
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(), android.R.layout.simple_list_item_1, list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),
+                android.R.layout.simple_list_item_1, list);
 
         // Attach to GridView
         GridView gridView = (GridView) view.findViewById(R.id.storeGridView);

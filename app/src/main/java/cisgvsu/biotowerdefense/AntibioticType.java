@@ -31,4 +31,17 @@ public enum AntibioticType {
                  return 0;
          }
      }
+
+     public static String toString(AntibioticType type) {
+        switch (type) {
+            case penicillin:
+                return "penicillin";
+            case vancomycin:
+                return "vancomycin";
+            case linezolid:
+                return "linezolid";
+            default:
+                return null;
+        }
+     }
 }
