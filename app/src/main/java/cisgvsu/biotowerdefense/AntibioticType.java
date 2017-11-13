@@ -56,4 +56,17 @@ public enum AntibioticType {
             return null;
         }
      }
+
+     public static int getImage(AntibioticType type) {
+         switch (type) {
+             case penicillin:
+                 return R.drawable.tower_penicillin;
+             case vancomycin:
+                 return R.drawable.tower_vancomycin;
+             case linezolid:
+                 return R.drawable.tower_linezolid;
+             default:
+                 return R.drawable.tower_placeholder;
+         }
+     }
 }

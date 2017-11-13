@@ -53,15 +53,14 @@ public class MainActivity extends AppCompatActivity implements Observer {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if (extras != null) {
+            // Get all the info about the tower we're putting in
             String tower = extras.getString(InventoryFragment.EXTRA_TOWER_TO_PLACE);
             int position = extras.getInt(InventoryFragment.EXTRA_TOWER_POSITION);
             String strType = tower.substring(0, tower.indexOf("\n"));
-            Log.d("tag", strType);
+
+            // Add tower to game
             AntibioticType type = AntibioticType.stringToEnum(strType);
-            AntibioticTower newTower = new AntibioticTower(type, position);
-            game.addTower(newTower, position);
-            //game.takeOutOfInventory(newTower);
-            Log.d("tag", "Tower name: " + tower + " tower position: " + position);
+            game.takeOutOfInventoryAndAdd(type, position);
         }
 
         ArrayList<ImageView> towerImages = new ArrayList<>();
@@ -95,9 +94,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
                     }
                 });
 
+                // If this spot has an actual tower, get the right resource for it
                 AntibioticTower towerFromGame = game.towerAtIndex(i);
                 if (towerFromGame != null) {
-                    t.setImageResource(R.drawable.tower);
+                    AntibioticType type = towerFromGame.getType();
+                    t.setImageResource(AntibioticType.getImage(type));
                 }
             }
 

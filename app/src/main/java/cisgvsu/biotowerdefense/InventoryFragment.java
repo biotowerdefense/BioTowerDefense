@@ -121,23 +121,9 @@ public class InventoryFragment extends android.support.v4.app.Fragment {
         for (String str : strInv) {
             // Get the type and whether it was placed
             String type = str.substring(0, str.indexOf(":"));
-            String placed = str.substring(str.indexOf(":")+2);
+            int count = Integer.parseInt(str.substring(str.indexOf(":")+2));
 
-            // If not placed, always add
-            if (placed.equals("false")) {
-                // If it's already placed, add 1 to the count
-                if (inv.containsKey(type)) {
-                    inv.put(type, inv.get(type)+1);
-                } else {
-                    inv.put(type, 1);
-                }
-            } else {
-                // If placed, only add if this is the first one we found
-                // and note that 0 are available to be placed
-                if (!inv.containsKey(type)) {
-                    inv.put(type, 0);
-                }
-            }
+            inv.put(type, count);
         }
         this.inventory = inv;
     }
