@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     public static final String EXTRA_TOWER_POSITION = "cisgvsu.biotowerdefense.TOWER_POSITION";
     public static final String EXTRA_INVENTORY = "cisgvsu.biotowerdefense.EXTRA_INVENTORY";
+    public static final String EXTRA_MONEY = "cisgvsu.biotowerdefense.EXTRA_MONEY";
     public final Game game = new Game();
 
     @Override
@@ -50,17 +51,35 @@ public class MainActivity extends AppCompatActivity implements Observer {
             }
         });
 
+        // Handle any extras we may have gotten (aka we navigated here from store/inventory)
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            // Get all the info about the tower we're putting in
+            // Get the extras from the inventory, if that's where we came from
             String tower = extras.getString(InventoryFragment.EXTRA_TOWER_TO_PLACE);
-            int position = extras.getInt(InventoryFragment.EXTRA_TOWER_POSITION);
-            String strType = tower.substring(0, tower.indexOf("\n"));
+            int position = extras.getInt(InventoryFragment.EXTRA_TOWER_POSITION, -999);
 
-            // Add tower to game
-            AntibioticType type = AntibioticType.stringToEnum(strType);
-            game.takeOutOfInventoryAndAdd(type, position);
+            // Came from inventory
+            if (position != -999 && tower != null) {
+                String strType = tower.substring(0, tower.indexOf("\n"));
+
+                // Add tower to game
+                AntibioticType type = AntibioticType.stringToEnum(strType);
+                game.takeOutOfInventoryAndAdd(type, position);
+            } else {
+                // Get the extras from the store, if that's where we came from
+                position = extras.getInt(StoreFragment.EXTRA_TOWER_POSITION, -999);
+                tower = extras.getString(StoreFragment.EXTRA_TOWER_TO_PLACE);
+
+                // Came from store
+                if (position != -999 && tower != null) {
+                    String strType = tower.substring(0, tower.indexOf("\n"));
+
+                    // Add tower to game
+                    AntibioticType type = AntibioticType.stringToEnum(strType);
+                    game.buyTower(type, position);
+                }
+            }
         }
 
         ArrayList<ImageView> towerImages = new ArrayList<>();
@@ -114,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         Intent intent = new Intent(this, StoreInventoryNavigationActivity.class);
         intent.putExtra(EXTRA_TOWER_POSITION, position);
         intent.putStringArrayListExtra(EXTRA_INVENTORY, game.getInventoryAsStrings());
+        intent.putExtra(EXTRA_MONEY, game.getMoney());
         startActivity(intent);
     }
 

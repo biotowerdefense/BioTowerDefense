@@ -48,6 +48,9 @@ public class Game extends Observable {
     /** Keep track of the current score */
     private int score;
 
+    /** Keep track of the current money in the game. */
+    private int money = 10;
+
     /** For other classes to see if the game is paused or not. */
     private boolean isPaused = true;
 
@@ -188,6 +191,17 @@ public class Game extends Observable {
     }
 
     /**
+     * Buy a tower of the given type and place it at the specified position.
+     * @param type Type of tower to buy
+     * @param position Where we're putting the tower
+     */
+    public void buyTower(AntibioticType type, int position) {
+        AntibioticTower tower = new AntibioticTower(type, position);
+        this.addTower(tower, position);
+        this.money -= AntibioticType.getCost(type);
+    }
+
+    /**
      * Retun the inventory as an arraylist of strings
      * which indicates whether or not they've been placed
      * in the game.
@@ -200,6 +214,18 @@ public class Game extends Observable {
             strInventory.add(type + ": " + this.inventory.get(t));
         }
         return strInventory;
+    }
+
+    /**
+     * Add a tower of the specified type to our inventory.
+     * @param type The type of tower to add.
+     */
+    public void addToInventory(AntibioticType type) {
+        if (this.inventory.containsKey(type)) {
+            this.inventory.put(type, this.inventory.get(type)+1);
+        } else {
+            this.inventory.put(type, 1);
+        }
     }
 
     /**
@@ -235,6 +261,9 @@ public class Game extends Observable {
             LinkedList<Bacteria> bacteriaList = new LinkedList<>();
             if (oldTower != null) {
                 bacteriaList = (LinkedList<Bacteria>) bacteriaToTower.remove(oldTower);
+
+                // Put the old tower back in our inventory
+                addToInventory(oldTower.getType());
             }
 
             // Put the new tower in the mapping to its bacteria
@@ -355,7 +384,6 @@ public class Game extends Observable {
                     }
                 }
 
-                // TODO: Notify control class that bacteria became resistant
                 // Call setChanged in Observable & notify observers
                 setChanged();
                 notifyObservers(bacteria.getType() + " has become resistant to " + antibiotic);
@@ -469,6 +497,14 @@ public class Game extends Observable {
      */
     public int getScore() {
         return score;
+    }
+
+    /**
+     * Get the current money.
+     * @return current money in game
+     */
+    public int getMoney() {
+        return this.money;
     }
 
     /**

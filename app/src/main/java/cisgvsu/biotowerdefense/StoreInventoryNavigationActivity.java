@@ -24,6 +24,7 @@ public class StoreInventoryNavigationActivity extends AppCompatActivity {
         // Get the tower position we were sent & the contents of the inventory
         Intent intent = getIntent();
         int position = intent.getIntExtra(MainActivity.EXTRA_TOWER_POSITION, 0);
+        int money = intent.getIntExtra(MainActivity.EXTRA_MONEY, 0);
         ArrayList<String> strInventory = intent.getStringArrayListExtra(MainActivity.EXTRA_INVENTORY);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -38,6 +39,7 @@ public class StoreInventoryNavigationActivity extends AppCompatActivity {
         // Build bundle to set position and inventory
         Bundle bundle = new Bundle();
         bundle.putInt(MainActivity.EXTRA_TOWER_POSITION, position);
+        bundle.putInt(MainActivity.EXTRA_MONEY, money);
         bundle.putStringArrayList(MainActivity.EXTRA_INVENTORY, strInventory);
         adapter.setBundle(bundle);
 
