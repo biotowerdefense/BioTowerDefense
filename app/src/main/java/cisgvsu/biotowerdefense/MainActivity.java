@@ -2,6 +2,7 @@ package cisgvsu.biotowerdefense;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -27,14 +29,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
-
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            String tower = extras.getString(InventoryFragment.EXTRA_TOWER_TO_PLACE);
-            int position = extras.getInt(InventoryFragment.EXTRA_TOWER_POSITION);
-            Log.d("tag", "Tower name: " + tower + " tower position: " + position);
-        }
 
         // Add ourselves as an observer, and then pass the game object to the view
         this.game.addObserver(this);
@@ -56,58 +50,59 @@ public class MainActivity extends AppCompatActivity implements Observer {
             }
         });
 
-        final ImageView tower0 = (ImageView) findViewById(R.id.tower0);
-        tower0.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                launchStore(0);
-                tower0.setImageResource(R.drawable.tower);
-                //add a tower to place zero
-                // TODO: in future code call the store/inventory here to pick the correct tower.
-                // For now just use penicillin for everything
-                //game.addTower(AntibioticType.penicillin, 0);
-            }
-        });
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            String tower = extras.getString(InventoryFragment.EXTRA_TOWER_TO_PLACE);
+            int position = extras.getInt(InventoryFragment.EXTRA_TOWER_POSITION);
+            String strType = tower.substring(0, tower.indexOf("\n"));
+            Log.d("tag", strType);
+            AntibioticType type = AntibioticType.stringToEnum(strType);
+            AntibioticTower newTower = new AntibioticTower(type, position);
+            game.addTower(newTower, position);
+            //game.takeOutOfInventory(newTower);
+            Log.d("tag", "Tower name: " + tower + " tower position: " + position);
+        }
 
-        final ImageView tower1 = (ImageView) findViewById(R.id.tower1);
-        tower1.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                launchStore(1);
-                //if (tower1.get)
-                //tower1.setImageResource(R.drawable.tower);
-                //add a tower to place one
-                //game.addTower(AntibioticType.penicillin, 1);
+        ArrayList<ImageView> towerImages = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            final int index = i;
+            final ImageView t;
+            switch (i) {
+                case 0:
+                    t = (ImageView) findViewById(R.id.tower0);
+                    break;
+                case 1:
+                    t = (ImageView) findViewById(R.id.tower1);
+                    break;
+                case 2:
+                    t = (ImageView) findViewById(R.id.tower2);
+                    break;
+                case 3:
+                    t = (ImageView) findViewById(R.id.tower3);
+                    break;
+                case 4:
+                    t = (ImageView) findViewById(R.id.tower4);
+                    break;
+                default:
+                    t = null;
             }
-        });
 
-        final ImageView tower2 = (ImageView) findViewById(R.id.tower2);
-        tower2.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                launchStore(2);
-                //tower2.setImageResource(R.drawable.tower);
-                //add a tower to place two
-                //game.addTower(AntibioticType.penicillin, 2);
-            }
-        });
+            if (t != null) {
+                t.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        launchStore(index);
+                    }
+                });
 
-        final ImageView tower3 = (ImageView) findViewById(R.id.tower3);
-        tower3.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                launchStore(3);
-                //tower3.setImageResource(R.drawable.tower);
-                //add a tower to place three
-               // game.addTower(AntibioticType.penicillin, 3);
+                AntibioticTower towerFromGame = game.towerAtIndex(i);
+                if (towerFromGame != null) {
+                    t.setImageResource(R.drawable.tower);
+                }
             }
-        });
 
-        final ImageView tower4 = (ImageView) findViewById(R.id.tower4);
-        tower4.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                launchStore(4);
-                //tower4.setImageResource(R.drawable.tower);
-                //add a tower to place four
-                //game.addTower(AntibioticType.penicillin, 4);
-            }
-        });
+            towerImages.add(t);
+        }
     }
 
     /**

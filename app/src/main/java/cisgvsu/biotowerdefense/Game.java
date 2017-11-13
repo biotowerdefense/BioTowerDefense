@@ -55,6 +55,10 @@ public class Game extends Observable {
     public Game() {
         // Instantiate lists
         towers = new Vector<>(NUM_TOWERS);
+        for (int i = 0; i < NUM_TOWERS; i++) {
+            towers.add(null);
+            towerThreads.add(null);
+        }
         bacteriaToTower = new ConcurrentHashMap<>();
         resistances = new ConcurrentHashMap<>();
         unassignedBacteria = new Vector<>();
@@ -108,6 +112,19 @@ public class Game extends Observable {
 
 
     /**
+     * Return the tower at this index. Could be null.
+     * @param index The index we're checking.
+     * @return Tower if it exists, null otherwise.
+     */
+    public AntibioticTower towerAtIndex(int index) {
+        if (index < towers.size()-1 && index >= 0) {
+            return towers.get(index);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Return all the bacteria in the game so their
      * locations can be accessed to draw them.
      *
@@ -144,6 +161,9 @@ public class Game extends Observable {
      */
     public ArrayList<AntibioticTower> getInventory() {
         return this.inventory;
+    }
+
+    public void takeOutOfInventory(AntibioticTower tower, int position) {
     }
 
     public ArrayList<String> getInventoryAsStrings() {

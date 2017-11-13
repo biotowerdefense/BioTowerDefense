@@ -44,4 +44,16 @@ public enum AntibioticType {
                 return null;
         }
      }
+
+     public static AntibioticType stringToEnum(String str) {
+        if (str.equalsIgnoreCase("penicillin")) {
+            return penicillin;
+        } else if (str.equalsIgnoreCase("vancomycin")) {
+            return vancomycin;
+        } else if (str.equalsIgnoreCase("linezolid")) {
+            return linezolid;
+        } else {
+            return null;
+        }
+     }
 }
