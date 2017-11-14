@@ -24,9 +24,9 @@ import java.util.Observer;
 
 public class GameSurfaceView extends SurfaceView {
 
-    private Game game;
     DrawingThread thread;
     Context context;
+    private Game game;
 
     public GameSurfaceView (Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -102,10 +102,12 @@ public class GameSurfaceView extends SurfaceView {
         private int height;
         private Game game;
 
-        // Variables for displaying score
+        // Variables for displaying score and money
         private Paint paintText;
         private int renderedScore;
         private String renderedScoreString;
+        private int renderedMoney;
+        private String renderedMoneyString;
 
         public DrawingThread(SurfaceHolder holder, Bitmap bg, Bitmap bacBmp, int width, int height) {
             this.paintText = new Paint();
@@ -172,6 +174,7 @@ public class GameSurfaceView extends SurfaceView {
                 }
 
                 canvas.drawText(getScoreString(), 100, 100, paintText);
+                canvas.drawText(getMoneyString(), 500, 100, paintText);
             }
         }
 
@@ -194,6 +197,15 @@ public class GameSurfaceView extends SurfaceView {
                 this.renderedScoreString = "Score: " + game.getScore();
             }
             return renderedScoreString;
+        }
+
+        private String getMoneyString() {
+            //Only create new score string for new scores to help with garbage collector problems
+            if (game.getMoney() != this.renderedMoney || this.renderedMoneyString == null) {
+                this.renderedMoney = game.getMoney();
+                this.renderedMoneyString = "Score: " + game.getMoney();
+            }
+            return renderedMoneyString;
         }
     }
 }
