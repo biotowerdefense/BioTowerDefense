@@ -113,6 +113,7 @@ public class GameSurfaceView extends SurfaceView {
             this.paintText = new Paint();
             paintText.setTextSize(50);
             paintText.setColor(Color.DKGRAY);
+            paintText.setTextAlign(Paint.Align.CENTER);
 
             this.holder = holder;
             this.bg = bg;
@@ -175,6 +176,7 @@ public class GameSurfaceView extends SurfaceView {
 
                 canvas.drawText(getScoreString(), 100, 100, paintText);
                 canvas.drawText(getMoneyString(), 500, 100, paintText);
+                canvas.drawText(game.getResistanceString(), canvas.getWidth()/2, canvas.getHeight() - 50, paintText);
             }
         }
 

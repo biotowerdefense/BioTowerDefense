@@ -57,6 +57,9 @@ public class Game extends Observable {
     /** All the towers we've purchased. */
     private HashMap<AntibioticType, Integer> inventory;
 
+    /** Message about bacteria resistance being displayed to the user */
+    private String resistanceString = "";
+
     /**
      * Creates a new game instance by instantiating the
      * fields, making them all thread-safe.
@@ -384,6 +387,7 @@ public class Game extends Observable {
                     }
                 }
 
+                resistanceString = bacteria.getType() + " has become resistant to " +  antibiotic.toString();
                 // Call setChanged in Observable & notify observers
                 setChanged();
                 notifyObservers(bacteria.getType() + " has become resistant to " + antibiotic);
@@ -408,8 +412,8 @@ public class Game extends Observable {
         double chance = 0;
         switch (antibiotic) {
             case penicillin:
-                chance = 0.03;
-                //chance = 0.9;
+                //chance = 0.03;
+                chance = 0.9;
                 break;
             case vancomycin:
                 chance = 0.01;
@@ -505,6 +509,14 @@ public class Game extends Observable {
      */
     public int getMoney() {
         return this.money;
+    }
+
+    /**
+     * Get the current resistance message to display to the user
+     * @return String
+     */
+    public String getResistanceString() {
+        return this.resistanceString;
     }
 
     /**
