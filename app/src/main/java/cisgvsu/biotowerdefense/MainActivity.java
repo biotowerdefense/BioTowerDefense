@@ -24,15 +24,19 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public static final String EXTRA_TOWER_POSITION = "cisgvsu.biotowerdefense.TOWER_POSITION";
     public static final String EXTRA_INVENTORY = "cisgvsu.biotowerdefense.EXTRA_INVENTORY";
     public static final String EXTRA_MONEY = "cisgvsu.biotowerdefense.EXTRA_MONEY";
-    public final Game game = new Game();
+    public static final String GAME_STATE = "cisgvsu.biotowerdefense.GAME_STATE";
+    //public final Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
 
+        BioTowerDefense app = (BioTowerDefense) getApplicationContext();
+        final Game game = app.getGame();
+
         // Add ourselves as an observer, and then pass the game object to the view
-        this.game.addObserver(this);
+        game.addObserver(this);
         ((GameSurfaceView) findViewById(R.id.surfaceView)).setGame(game);
 
         // Control starting and pausing the game
@@ -125,11 +129,27 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        BioTowerDefense app = (BioTowerDefense) getApplicationContext();
+        final Game game = app.getGame();
+
+        String state = game.saveGameState();
+        savedInstanceState.putString(GAME_STATE, state);
+        Log.d("*****************", state);
+        super.onSaveInstanceState(savedInstanceState);
+
+
+    }
+
     /**
      * Launch the store/inventory screen and pass to it which tower was pressed.
      * @param position The tower that was pressed.
      */
     public void launchStore(int position) {
+        BioTowerDefense app = (BioTowerDefense) getApplicationContext();
+        final Game game = app.getGame();
+
         Intent intent = new Intent(this, StoreInventoryNavigationActivity.class);
         intent.putExtra(EXTRA_TOWER_POSITION, position);
         intent.putStringArrayListExtra(EXTRA_INVENTORY, game.getInventoryAsStrings());
@@ -148,6 +168,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public void update(Observable o, Object arg) {
         Log.d("tag", (String) arg);
         final String msg = (String) arg;
+        BioTowerDefense app = (BioTowerDefense) getApplicationContext();
+        final Game game = app.getGame();
 
         // We have to run this on the UI thread to avoid errors
         new Thread() {
@@ -176,6 +198,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
     private AlertDialog getDialog(String msg) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(msg);
+        BioTowerDefense app = (BioTowerDefense) getApplicationContext();
+        final Game game = app.getGame();
 
         // Add button to handle when user wants to place the tower
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

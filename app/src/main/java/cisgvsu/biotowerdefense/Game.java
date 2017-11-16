@@ -81,6 +81,16 @@ public class Game extends Observable {
     }
 
     /**
+     * Create a new game instance using the saved state
+     * represented by the string parameter.
+     * @param gameState A string representing the
+     *                  state of a saved game.
+     */
+    public Game(String gameState) {
+
+    }
+
+    /**
      * Start the game by giving one freebie penicillin tower
      * in the inventory.
      */
@@ -110,7 +120,9 @@ public class Game extends Observable {
         this.addingBacteria = false;
         this.isPaused = true;
         for (AntibioticTower t : towers) {
-            t.setShooting(false);
+            if (t != null) {
+                t.setShooting(false);
+            }
         }
     }
 
@@ -248,7 +260,7 @@ public class Game extends Observable {
             AntibioticTower oldTower = null;
             if (!towers.isEmpty() && towers.get(newLocation) != null) {
                 oldTower = towers.remove(newLocation);
-                oldTower.setLocation(-1); // Back into inventory
+                addToInventory(oldTower.getType());
 
                 // Stop shooting thread for this tower
                 towerThreads.remove(newLocation);
@@ -264,9 +276,6 @@ public class Game extends Observable {
             LinkedList<Bacteria> bacteriaList = new LinkedList<>();
             if (oldTower != null) {
                 bacteriaList = (LinkedList<Bacteria>) bacteriaToTower.remove(oldTower);
-
-                // Put the old tower back in our inventory
-                addToInventory(oldTower.getType());
             }
 
             // Put the new tower in the mapping to its bacteria
@@ -458,7 +467,9 @@ public class Game extends Observable {
 
         if (!(nextIndex > towers.size()-1)) {
             AntibioticTower next = towers.get(nextIndex);
-            bacteriaToTower.get(next).add(bacteria);
+            if (next != null) {
+                bacteriaToTower.get(next).add(bacteria);
+            }
         } else {
             unassignedBacteria.add(bacteria);
         }
@@ -539,8 +550,10 @@ public class Game extends Observable {
          */
         @Override
         public void run() {
+            Log.d("**********", "made it into tower thread");
             while (tower.getShooting()) {
-                shootBacteria(tower);
+                boolean dead = shootBacteria(tower);
+                Log.d("tag", "shot bacteria, dead =" + dead);
                 try {
                     sleep(1000);
                 } catch (Exception e) {
@@ -560,12 +573,14 @@ public class Game extends Observable {
          */
         @Override
         public void run() {
+            Log.d("***********", "made it into bac thread");
             while (addingBacteria) {
+                Log.d("***********", "Total bacteria: " + getAllBacteria().size());
                 //Add to score once a second while game is running (aka bacteria is being added)
                 score++;
                 addBacteria(BacteriaType.staph);
                 for (AntibioticTower t : towers) {
-                    if (t != null && !t.inRange(bacteriaToTower.get(t).peek().getX())) {
+                    if (t != null && bacteriaToTower.get(t).peek() != null && !t.inRange(bacteriaToTower.get(t).peek().getX())) {
                         moveBacteriaToNextTower(t);
                     }
                 }
@@ -577,4 +592,51 @@ public class Game extends Observable {
             }
         }
     }
+
+    /**
+     * Create a string that represents the state of the
+     * game that can be used to create a new game instance in
+     * the same state.
+     * @return
+     */
+    public String saveGameState() {
+        String state = "";
+
+        // Get all the towers we have placed
+        String towers = "TOWERS[";
+        for (AntibioticTower t :this.towers) {
+            if (t == null) {
+                towers += "null,";
+            } else {
+                towers += AntibioticType.toString(t.getType()) + ",";
+            }
+        }
+        towers += "]\n";
+        state += towers;
+
+        // Get all the towers in our inventory
+        String inventory = "INVENTORY[";
+        for (AntibioticType type : this.inventory.keySet()) {
+            inventory += AntibioticType.toString(type) + ":" + this.inventory.get(type) + ",";
+        }
+        inventory += "]\n";
+        state += inventory;
+
+        // Get all the bacteria on the screen
+        String bacteria = "BACTERIA[";
+
+        bacteria += "]\n";
+        state += bacteria;
+
+        // Get our score
+        String score = "SCORE[" + this.score + "]\n";
+        state += score;
+
+        // Get our money
+        String money = "MONEY[" + this.money + "]\n";
+        state += money;
+
+        return state;
+    }
+
 }

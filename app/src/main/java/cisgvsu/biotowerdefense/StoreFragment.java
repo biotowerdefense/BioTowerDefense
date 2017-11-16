@@ -66,6 +66,7 @@ public class StoreFragment extends android.support.v4.app.Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         // Get the stuff that the main navigation activity sent us
         if (getArguments() != null) {
             this.towerPosition = getArguments().getInt(MainActivity.EXTRA_TOWER_POSITION);

@@ -21,11 +21,14 @@ public class StoreInventoryNavigationActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        BioTowerDefense app = (BioTowerDefense) getApplicationContext();
+        final Game game = app.getGame();
+
         // Get the tower position we were sent & the contents of the inventory
         Intent intent = getIntent();
         int position = intent.getIntExtra(MainActivity.EXTRA_TOWER_POSITION, 0);
-        int money = intent.getIntExtra(MainActivity.EXTRA_MONEY, 0);
-        ArrayList<String> strInventory = intent.getStringArrayListExtra(MainActivity.EXTRA_INVENTORY);
+        int money = game.getMoney();
+        ArrayList<String> strInventory = game.getInventoryAsStrings();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Store"));
