@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public void launchStore(int position) {
         BioTowerDefense app = (BioTowerDefense) getApplicationContext();
         final Game game = app.getGame();
+        game.stopGame();
 
         Intent intent = new Intent(this, StoreInventoryNavigationActivity.class);
         intent.putExtra(EXTRA_TOWER_POSITION, position);
@@ -206,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Restart game on close
-                game.startGame();
+                game.restartGame();
             }
         });
 

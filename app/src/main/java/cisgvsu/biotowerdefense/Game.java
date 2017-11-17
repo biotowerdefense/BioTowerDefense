@@ -95,7 +95,6 @@ public class Game extends Observable {
      * in the inventory.
      */
     public void startGame() {
-        //AntibioticTower freebie = new AntibioticTower(AntibioticType.penicillin, -1);
         this.inventory.put(AntibioticType.penicillin, 1);
     }
 
@@ -421,8 +420,8 @@ public class Game extends Observable {
         double chance = 0;
         switch (antibiotic) {
             case penicillin:
-                //chance = 0.03;
-                chance = 0.9;
+                chance = 0.03;
+                //chance = 0.9;
                 break;
             case vancomycin:
                 chance = 0.01;
