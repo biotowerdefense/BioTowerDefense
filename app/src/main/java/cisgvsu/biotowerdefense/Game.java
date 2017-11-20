@@ -13,7 +13,7 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This class controls the interaction of antibiotic towers and bacteria.
+ * This class controls the interaction of antibiotic towers and target.
  * The only public methods are for starting and stopping the game, and
  * adding and removing towers.
  *
@@ -25,24 +25,27 @@ public class Game extends Observable {
     private static final int NUM_TOWERS = 5;
 
     /** List of towers. */
-    private Vector<AntibioticTower> towers;
+    public Vector<AntibioticTower> towers;
 
-    /** Mapping of the bacteria that are in each tower's range.  */
-    private ConcurrentHashMap<AntibioticTower, Queue<Bacteria>> bacteriaToTower;
+    /** Mapping of the target that are in each tower's range.  */
+    public ConcurrentHashMap<AntibioticTower, Queue<Bacteria>> bacteriaToTower;
 
     /** Bacteria that aren't in any tower's range. */
     private Vector<Bacteria> unassignedBacteria;
 
-    /** Antibiotic resistance for new bacteria. */
+    /** Antibiotic resistance for new target. */
     private ConcurrentHashMap<BacteriaType, List<AntibioticType>> resistances;
 
-    /** The thread that adds bacteria to the game. */
+    /** The thread that adds target to the game. */
     private BacteriaThread bacteriaThread = new BacteriaThread();
 
     /** The set of threads that make the towers shoot. */
     private List<TowerThread> towerThreads = new ArrayList<>();
 
-    /** Control whether the game should be running the thread to add bacteria. */
+    /** The List of pills currently drawn on the screen */
+    private List<Pill> pills = new ArrayList<>();
+
+    /** Control whether the game should be running the thread to add target. */
     private boolean addingBacteria;
 
     /** Keep track of the current score */
@@ -57,7 +60,7 @@ public class Game extends Observable {
     /** All the towers we've purchased. */
     private HashMap<AntibioticType, Integer> inventory;
 
-    /** Message about bacteria resistance being displayed to the user */
+    /** Message about target resistance being displayed to the user */
     private String resistanceString = "";
 
     /**
@@ -99,7 +102,7 @@ public class Game extends Observable {
     }
 
     /**
-     * Add bacteria and make the towers shoot.
+     * Add target and make the towers shoot.
      */
     public void restartGame() {
         this.startAddingBacteria();
@@ -112,7 +115,7 @@ public class Game extends Observable {
     }
 
     /**
-     * Stop the towers from shooting and bacteria from
+     * Stop the towers from shooting and target from
      * moving.
      */
     public void stopGame() {
@@ -148,10 +151,10 @@ public class Game extends Observable {
     }
 
     /**
-     * Return all the bacteria in the game so their
+     * Return all the target in the game so their
      * locations can be accessed to draw them.
      *
-     * @return A list of all the bacteria.
+     * @return A list of all the target.
      */
     public ArrayList<Bacteria> getAllBacteria() {
         ArrayList<Bacteria> allBacteria = new ArrayList<>();
@@ -164,6 +167,22 @@ public class Game extends Observable {
             allBacteria.add(bacteria);
         }
         return allBacteria;
+    }
+
+    /**
+     * Get current list of pills shown on screen
+     * @return
+     */
+    public List<Pill> getPills() {
+        return pills;
+    }
+
+    /**
+     * Set the list of Pills that are currently being shown on screen
+     * @param pills
+     */
+    public void setPills(List<Pill> pills) {
+        this.pills = pills;
     }
 
 
@@ -245,7 +264,7 @@ public class Game extends Observable {
     /**
      * Add a new tower to the game with the specified type and in the given
      * location, replacing any existing tower in that location and taking on
-     * its list of bacteria.
+     * its list of target.
      *
      * @param tower The tower we're adding
      * @return The updated list of towers in the game, null if location is invalid.
@@ -270,14 +289,14 @@ public class Game extends Observable {
             towers.add(newLocation, tower);
             towerThreads.add(newLocation, new TowerThread(tower));
 
-            // Get any bacteria that may have belonged to the tower previously in this
+            // Get any target that may have belonged to the tower previously in this
             // location and remove it from the mapping
             LinkedList<Bacteria> bacteriaList = new LinkedList<>();
             if (oldTower != null) {
                 bacteriaList = (LinkedList<Bacteria>) bacteriaToTower.remove(oldTower);
             }
 
-            // Put the new tower in the mapping to its bacteria
+            // Put the new tower in the mapping to its target
             bacteriaToTower.put(tower, bacteriaList);
             return towers;
         }
@@ -285,7 +304,7 @@ public class Game extends Observable {
 
     /**
      * Removes the tower at the specified location, moving any
-     * bacteria up to the next tower's queue, and inserts
+     * target up to the next tower's queue, and inserts
      * null in its place to maintain position of other towers.
      *
      * @param location The location of the tower to be removed.
@@ -301,7 +320,7 @@ public class Game extends Observable {
             towerThreads.remove(location);
             t.setShooting(false);
 
-            // Move any bacteria in its queue to next tower
+            // Move any target in its queue to next tower
             Queue<Bacteria> queue = bacteriaToTower.remove(t);
             if (queue != null) {
                 Bacteria[] bacteria = (Bacteria[]) queue.toArray();
@@ -318,12 +337,12 @@ public class Game extends Observable {
     }
 
     /**
-     * Inspect the first bacteria, determine if one shot from tower
+     * Inspect the first target, determine if one shot from tower
      * will kill it. If so, remove it from queue. Otherwise, decrement
      * its health and leave it there.
      *
      * @param tower The tower that is currently shooting.
-     * @return True if the bacteria was killed, false otherwise.
+     * @return True if the target was killed, false otherwise.
      */
     private boolean shootBacteria(AntibioticTower tower) {
         Queue<Bacteria> bacteria = bacteriaToTower.get(tower);
@@ -335,7 +354,7 @@ public class Game extends Observable {
 
             if (power >= health) {
                 bacteria.remove();
-                //get a score bonus for killing a bacteria
+                //get a score bonus for killing a target
                 score++;
                 return true;
             } else {
@@ -347,7 +366,7 @@ public class Game extends Observable {
     }
 
     /**
-     * This method returns whether or not the specific bacteria passed in
+     * This method returns whether or not the specific target passed in
      * is resistant to the antibiotic. There are several cases.
      *
      * Case 1: Bacteria type is already resistant to the antibiotic, and
@@ -358,18 +377,18 @@ public class Game extends Observable {
      *
      * Case 3: Bacteria type is not resistant at all. Run algorithm.
      *
-     * @param bacteria The bacteria we're checking for resistance.
+     * @param bacteria The target we're checking for resistance.
      * @param antibiotic The type of antibiotic we're checking for resistance to.
-     * @return True if the bacteria is resistant, false otherwise.
+     * @return True if the target is resistant, false otherwise.
      */
     private boolean resistant(Bacteria bacteria, AntibioticType antibiotic) {
-        // Check if this type of bacteria is resistant to this type of antibiotic,
-        // and if the specific bacteria is not exempt from resistance
+        // Check if this type of target is resistant to this type of antibiotic,
+        // and if the specific target is not exempt from resistance
         if (!resistances.isEmpty() && resistances.get(bacteria.getType()).contains(antibiotic) &&
                 !bacteria.isExempt(antibiotic)) {
             return true;
         } else {
-            // Run the algorithm to see if the bacteria becomes resistant.
+            // Run the algorithm to see if the target becomes resistant.
             boolean nowResistant = this.resistanceAlgorithm(bacteria.getType(), antibiotic);
 
             // Update various fields to reflect the new resistance
@@ -383,7 +402,7 @@ public class Game extends Observable {
                     resistances.get(bacteria.getType()).add(antibiotic);
                 }
 
-                // Mark any bacteria of this type that are already created as being exempt
+                // Mark any target of this type that are already created as being exempt
                 // to this antibiotic
                 for (AntibioticTower t : bacteriaToTower.keySet()) {
                     Object obj[] = bacteriaToTower.get(t).toArray();
@@ -409,10 +428,10 @@ public class Game extends Observable {
     }
 
     /**
-     * Run to determine if the bacteria type will become resistant to the
+     * Run to determine if the target type will become resistant to the
      * antibiotic type.
      *
-     * @param bacteriaType The bacteria type we're checking.
+     * @param bacteriaType The target type we're checking.
      * @param antibiotic The antibiotic type we're checking.
      * @return True if resistant, false otherwise.
      */
@@ -435,13 +454,13 @@ public class Game extends Observable {
     }
 
     /**
-     * Add a new bacteria of the specified type to the end
+     * Add a new target of the specified type to the end
      * of the first tower's queue.
      *
-     * @param type The type of bacteria to be added to the game.
+     * @param type The type of target to be added to the game.
      */
     private void addBacteria(BacteriaType type) {
-        // Create the new bacteria
+        // Create the new target
         Bacteria bacteria = new Bacteria(type, 1);
 
         // Add it to the first tower's queue
@@ -454,11 +473,11 @@ public class Game extends Observable {
     }
 
     /**
-     * Remove the bacteria at the head of the queue for the specified
-     * tower, then find the next sequential tower and add the bacteria
+     * Remove the target at the head of the queue for the specified
+     * tower, then find the next sequential tower and add the target
      * to that tower's queue.
      *
-     * @param tower The tower that the bacteria is being moved away from.
+     * @param tower The tower that the target is being moved away from.
      */
     private void moveBacteriaToNextTower(AntibioticTower tower) {
         Bacteria bacteria = bacteriaToTower.get(tower).remove();
@@ -476,7 +495,7 @@ public class Game extends Observable {
 
     /**
      * Start the thread for the specified tower so that it shoots
-     * at the bacteria in its range - check first that it hasn't
+     * at the target in its range - check first that it hasn't
      * already been started. Set the flag to indicate that the
      * thread should execute.
      *
@@ -494,7 +513,7 @@ public class Game extends Observable {
     }
 
     /**
-     * Start a thread to begin adding bacteria to the game -
+     * Start a thread to begin adding target to the game -
      * first check that it hasn't been started yet. Set the flag
      * to indicate that the thread should execute.
      */
@@ -530,69 +549,6 @@ public class Game extends Observable {
     }
 
     /**
-     * Thread to shoot the tower.
-     */
-    private class TowerThread extends Thread {
-        /** The tower that this thread has been started for. */
-        AntibioticTower tower;
-
-        /**
-         * Constructor.
-         * @param tower The tower that will be shooting.
-         */
-        private TowerThread(AntibioticTower tower) {
-            this.tower = tower;
-        }
-
-        /**
-         * Shoot at the bacteria once every second.
-         */
-        @Override
-        public void run() {
-            Log.d("**********", "made it into tower thread");
-            while (tower.getShooting()) {
-                boolean dead = shootBacteria(tower);
-                Log.d("tag", "shot bacteria, dead =" + dead);
-                try {
-                    sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    /**
-     * Thread to add bacteria and move them between towers as necessary.
-     */
-    private class BacteriaThread extends Thread {
-        /**
-         * Add a bacteria every second. Check if the head of each tower's queue
-         * is out of range, if so, move it to next tower.
-         */
-        @Override
-        public void run() {
-            Log.d("***********", "made it into bac thread");
-            while (addingBacteria) {
-                Log.d("***********", "Total bacteria: " + getAllBacteria().size());
-                //Add to score once a second while game is running (aka bacteria is being added)
-                score++;
-                addBacteria(BacteriaType.staph);
-                for (AntibioticTower t : towers) {
-                    if (t != null && bacteriaToTower.get(t).peek() != null && !t.inRange(bacteriaToTower.get(t).peek().getX())) {
-                        moveBacteriaToNextTower(t);
-                    }
-                }
-                try {
-                    sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    /**
      * Create a string that represents the state of the
      * game that can be used to create a new game instance in
      * the same state.
@@ -621,7 +577,7 @@ public class Game extends Observable {
         inventory += "]\n";
         state += inventory;
 
-        // Get all the bacteria on the screen
+        // Get all the target on the screen
         String bacteria = "BACTERIA[";
 
         bacteria += "]\n";
@@ -636,6 +592,70 @@ public class Game extends Observable {
         state += money;
 
         return state;
+    }
+
+    /**
+     * Thread to shoot the tower.
+     */
+    private class TowerThread extends Thread {
+        /** The tower that this thread has been started for. */
+        AntibioticTower tower;
+
+        /**
+         * Constructor.
+         * @param tower The tower that will be shooting.
+         */
+        private TowerThread(AntibioticTower tower) {
+            this.tower = tower;
+        }
+
+        /**
+         * Shoot at the target once every second.
+         */
+        @Override
+        public void run() {
+            Log.d("**********", "made it into tower thread");
+            while (tower.getShooting()) {
+                boolean dead = shootBacteria(tower);
+                tower.setAddPill(true);
+                Log.d("tag", "shot target, dead =" + dead);
+                try {
+                    sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Thread to add target and move them between towers as necessary.
+     */
+    private class BacteriaThread extends Thread {
+        /**
+         * Add a target every second. Check if the head of each tower's queue
+         * is out of range, if so, move it to next tower.
+         */
+        @Override
+        public void run() {
+            Log.d("***********", "made it into bac thread");
+            while (addingBacteria) {
+                Log.d("***********", "Total target: " + getAllBacteria().size());
+                //Add to score once a second while game is running (aka target is being added)
+                score++;
+                addBacteria(BacteriaType.staph);
+                for (AntibioticTower t : towers) {
+                    if (t != null && bacteriaToTower.get(t).peek() != null && !t.inRange(bacteriaToTower.get(t).peek().getX())) {
+                        moveBacteriaToNextTower(t);
+                    }
+                }
+                try {
+                    sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }

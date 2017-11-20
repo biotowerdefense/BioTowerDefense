@@ -19,6 +19,7 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -54,11 +55,12 @@ public class GameSurfaceView extends SurfaceView {
         // Get the bitmaps that we'll draw
         Bitmap bg = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
         Bitmap bac = BitmapFactory.decodeResource(getResources(), R.drawable.bacteria);
+        Bitmap pill = BitmapFactory.decodeResource(getResources(), R.drawable.pill);
 
         // Scale the background
         bg = Bitmap.createScaledBitmap(bg, screenWidth, screenHeight, false);
 
-        thread = new DrawingThread(getHolder(), bg, bac, screenWidth, screenHeight);
+        thread = new DrawingThread(getHolder(), bg, bac, pill, screenWidth, screenHeight);
 
         // Set up SurfaceHolder for drawing
         SurfaceHolder holder = getHolder();
@@ -98,6 +100,7 @@ public class GameSurfaceView extends SurfaceView {
         private boolean run = false;
         private Bitmap bg;
         private Bitmap bacBmp;
+        private Bitmap pillBmp;
         private int width;
         private int height;
         private Game game;
@@ -109,7 +112,7 @@ public class GameSurfaceView extends SurfaceView {
         private int renderedMoney;
         private String renderedMoneyString;
 
-        public DrawingThread(SurfaceHolder holder, Bitmap bg, Bitmap bacBmp, int width, int height) {
+        public DrawingThread(SurfaceHolder holder, Bitmap bg, Bitmap bacBmp, Bitmap pillBmp, int width, int height) {
             this.paintText = new Paint();
             paintText.setTextSize(50);
             paintText.setColor(Color.DKGRAY);
@@ -118,6 +121,7 @@ public class GameSurfaceView extends SurfaceView {
             this.holder = holder;
             this.bg = bg;
             this.bacBmp = bacBmp;
+            this.pillBmp = pillBmp;
             this.width = width;
             this.height = height;
             //this.game = new Game();
@@ -152,14 +156,16 @@ public class GameSurfaceView extends SurfaceView {
         }
 
         /**
-         * Draw the background and the bacteria.
+         * Draw the background and the target.
          * @param canvas
          */
         public void draw(Canvas canvas) {
             if (canvas != null) {
                 canvas.drawColor(Color.BLACK);
+                //Draw background
                 canvas.drawBitmap(bg, 0, 0, null);
 
+                //Locate and draw target
                 if (this.game != null) {
                     ArrayList<Bacteria> allBacteria = game.getAllBacteria();
                     for (Bacteria bac : allBacteria) {
@@ -174,7 +180,47 @@ public class GameSurfaceView extends SurfaceView {
                     //Log.d("BAC", "" + allBacteria.size());
                 }
 
-                canvas.drawText(getScoreString(), 100, 100, paintText);
+                //Update current pill positions
+                for (Pill pill : game.getPills()) {
+                    canvas.drawBitmap(pillBmp, pill.getX(), pill.getY(), null);
+                    movePill(pill);
+                }
+
+                if (this.game != null && !game.towers.isEmpty()) {
+                    //Draw new pill for each tower
+                    for (AntibioticTower tower : game.towers) {
+                        if(tower != null && tower.getShooting() && tower.addPill()) {
+                            tower.setAddPill(false);
+                            Pill pill = null;
+                            switch (tower.getLocation()) {
+                                //TODO EK: Start pill placement better
+                                case 0:
+                                    pill = new Pill(1500, 200, game.bacteriaToTower.get(tower).peek());
+                                    break;
+                                case 1:
+                                    pill = new Pill(1000, 200, game.bacteriaToTower.get(tower).peek());
+                                    break;
+                                case 2:
+                                    pill = new Pill(1000, 450, game.bacteriaToTower.get(tower).peek());
+                                    break;
+                                case 3:
+                                    pill = new Pill(550, 450, game.bacteriaToTower.get(tower).peek());
+                                    break;
+                                case 4:
+                                    pill = new Pill(300, 450, game.bacteriaToTower.get(tower).peek());
+                                    break;
+                            }
+                            if (pill != null) {
+                                List<Pill> pills = game.getPills();
+                                pills.add(pill);
+                                game.setPills(pills);
+                                canvas.drawBitmap(pillBmp, pill.getX(), pill.getY(), null);
+                            }
+                        }
+                    }
+                }
+
+                canvas.drawText(getScoreString(), 150, 100, paintText);
                 canvas.drawText(getMoneyString(), 500, 100, paintText);
                 canvas.drawText(game.getResistanceString(), canvas.getWidth()/2, canvas.getHeight() - 50, paintText);
             }
@@ -192,6 +238,17 @@ public class GameSurfaceView extends SurfaceView {
             }
         }
 
+        private void movePill(Pill pill) {
+            if (pill.getTargetBacteria() == null || !pill.getTargetBacteria().isOnScreen()) {
+                //remove pill
+                List<Pill> pills = game.getPills();
+                pills.remove(pill);
+                game.setPills(pills);
+            } else {
+                pill.updatePosition();
+            }
+        }
+
         private String getScoreString() {
             //Only create new score string for new scores to help with garbage collector problems
             if (game.getScore() != this.renderedScore || this.renderedScoreString == null) {
@@ -205,7 +262,7 @@ public class GameSurfaceView extends SurfaceView {
             //Only create new score string for new scores to help with garbage collector problems
             if (game.getMoney() != this.renderedMoney || this.renderedMoneyString == null) {
                 this.renderedMoney = game.getMoney();
-                this.renderedMoneyString = "Score: " + game.getMoney();
+                this.renderedMoneyString = "Money: " + game.getMoney();
             }
             return renderedMoneyString;
         }

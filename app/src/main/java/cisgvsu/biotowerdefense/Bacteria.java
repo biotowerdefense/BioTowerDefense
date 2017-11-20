@@ -3,35 +3,32 @@ package cisgvsu.biotowerdefense;
 import java.util.ArrayList;
 
 /**
- * The bacteria objects for the game.
+ * The target objects for the game.
  * Created by Kelsey on 8/31/2017.
  */
 public class Bacteria {
 
-    /** The bacteria's current health. */
-    private int health;
-
-    /** The antibiotics that this bacteria is NOT yet resistant to, even when other
-     *  bacteria of the same type that are created later will be resistant to them.*/
-    private ArrayList<AntibioticType> exempt;
-
-    /** The type of this bacteria. */
+    /** The type of this target. */
     private final BacteriaType type;
-
-    /** Whether or not this bacteria is currently on the screen. */
+    /** The target's current health. */
+    private int health;
+    /** The antibiotics that this target is NOT yet resistant to, even when other
+     *  target of the same type that are created later will be resistant to them.*/
+    private ArrayList<AntibioticType> exempt;
+    /** Whether or not this target is currently on the screen. */
     private boolean onScreen;
 
     private boolean initialPositionSet;
 
-    /** The value to be added to the player's score when this bacteria is killed. */
+    /** The value to be added to the player's score when this target is killed. */
     private int value;
 
     private int x;
     private int y;
 
     /**
-     * Create a new bacteria with the given type and health.
-     * Score value is the bacteria's initial health.
+     * Create a new target with the given type and health.
+     * Score value is the target's initial health.
      * @param type
      * @param health
      */
@@ -45,23 +42,23 @@ public class Bacteria {
     }
 
     /**
-     * Get the bacteria's health.
-     * @return An int representing how much health the bacteria has.
+     * Get the target's health.
+     * @return An int representing how much health the target has.
      */
     public int getHealth() {
         return health;
     }
 
     /**
-     * Set the bacteria's health.
-     * @param health The new health of the bacteria.
+     * Set the target's health.
+     * @param health The new health of the target.
      */
     public void setHealth(int health) {
         this.health = health;
     }
 
     /**
-     * Return a boolean indicating whether or not the bacteria
+     * Return a boolean indicating whether or not the target
      * is exempt from resistant to the specific antibiotic.
      * @param antibiotic The antibiotic we're checking.
      * @return True if exempt from resistant, false otherwise.
@@ -75,7 +72,7 @@ public class Bacteria {
     }
 
     /**
-     * Set this bacteria as being exempt from resistant to the
+     * Set this target as being exempt from resistant to the
      * specified antibiotic.
      * @param antibiotic
      */
@@ -87,7 +84,7 @@ public class Bacteria {
     }
 
     /**
-     * Return the type of this bacteria.
+     * Return the type of this target.
      * @return
      */
     public BacteriaType getType() {
@@ -95,7 +92,7 @@ public class Bacteria {
     }
 
     /**
-     * Return whether or not this bacteria is displayed on the screen.
+     * Return whether or not this target is displayed on the screen.
      * @return
      */
     public boolean isOnScreen() {
@@ -108,7 +105,7 @@ public class Bacteria {
     }
 
     /**
-     * Set whether or not this bacteria is currently displayed on the screen.
+     * Set whether or not this target is currently displayed on the screen.
      * @param onScreen
      */
     public void setOnScreen(boolean onScreen) {
@@ -117,7 +114,7 @@ public class Bacteria {
     }
 
     /**
-     * Get the score value of this bacteria.
+     * Get the score value of this target.
      * @return
      */
     public int getValue() {
@@ -126,7 +123,7 @@ public class Bacteria {
     }
 
     /**
-     * Set the score value of this bacteria.
+     * Set the score value of this target.
      * @param value
      */
     public void setValue(int value) {
@@ -142,12 +139,12 @@ public class Bacteria {
         return x;
     }
 
-    public int getY() {
-        return y;
-    }
-
     public void setX(int x) {
         this.x = x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     public void setY(int y) {

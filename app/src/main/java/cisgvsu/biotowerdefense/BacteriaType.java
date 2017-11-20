@@ -9,7 +9,7 @@ public enum BacteriaType {
     staph, pneumonia, strep;
 
     /**
-     * Return the short common name for the bacteria.
+     * Return the short common name for the target.
      * @param type
      * @return
      */
@@ -27,7 +27,7 @@ public enum BacteriaType {
     }
 
     /**
-     * Return the long scientific name for the bacteria.
+     * Return the long scientific name for the target.
      * @param type
      * @return
      */

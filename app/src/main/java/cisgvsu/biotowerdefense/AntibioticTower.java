@@ -6,7 +6,7 @@ import android.util.Range;
 /**
  * This class models an antibiotic "tower" that shoots
  * a dosage of a certain type of antibiotic at the different
- * bacteria.
+ * target.
  *
  * Created by Ella on 8/31/2017.
  */
@@ -29,8 +29,9 @@ public class AntibioticTower {
     private int minRange;
     private int maxRange;
 
-    /** Whether or not the tower is shooting at bacteria (thread control). */
+    /** Whether or not the tower is shooting at target (thread control). */
     private boolean shooting;
+    private boolean addPill;
 
     /**
      * Create a default penicillin tower at the first location.
@@ -136,8 +137,8 @@ public class AntibioticTower {
     }
 
     /**
-     * Get whether or not the bacteria is in range of the tower
-     * @param x the x-coordinate of the bacteria
+     * Get whether or not the target is in range of the tower
+     * @param x the x-coordinate of the target
      * @return True if it is in range, false otherwise
      */
     public boolean inRange(int x) {
@@ -162,5 +163,21 @@ public class AntibioticTower {
      */
     public void setShooting(boolean newVal) {
         this.shooting = newVal;
+    }
+
+    /**
+     * Get if a new pill can be added for this tower
+     * @return True if a new pill can be added, false otherwise
+     */
+    public boolean addPill() {
+        return addPill;
+    }
+
+    /**
+     * Set whether or not a new pill can be added
+     * @param addPill if a new pill can be added
+     */
+    public void setAddPill(boolean addPill) {
+        this.addPill = addPill;
     }
 }
