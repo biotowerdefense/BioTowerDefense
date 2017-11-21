@@ -1,6 +1,7 @@
 package cisgvsu.biotowerdefense;
 
 import android.content.res.Resources;
+import android.util.Log;
 import android.util.Range;
 
 /**
@@ -58,25 +59,32 @@ public class AntibioticTower {
 
         //set the reach of the tower
         switch (location) {
-            // -1 means it's just in our inventory, no reach
-            case -1:
-                this.maxRange = Integer.MIN_VALUE;
-                this.minRange = Integer.MIN_VALUE;
             case 0:
                 this.maxRange = screenWidth;
                 this.minRange = screenWidth - fifthWidth;
+                Log.d("*************", "Tower 0, max = " + maxRange + " min = " + minRange);
+                break;
             case 1:
                 this.maxRange = screenWidth - fifthWidth;
                 this.minRange = screenWidth - 2*fifthWidth;
+                Log.d("*************", "Tower 1, max = " + maxRange + " min = " + minRange);
+                break;
             case 2:
                 this.maxRange = screenWidth - 2*fifthWidth;
                 this.minRange = screenWidth - 3*fifthWidth;
+                Log.d("*************", "Tower 2, max = " + maxRange + " min = " + minRange);
+                break;
             case 3:
                 this.maxRange = screenWidth - 3*fifthWidth;
-                this.minRange = screenWidth - 4*fifthWidth;;
+                this.minRange = screenWidth - 4*fifthWidth;
+                Log.d("*************", "Tower 3, max = " + maxRange + " min = " + minRange);
+                break;
             case 4:
-                this.maxRange = screenWidth = 4*fifthWidth;
+                this.maxRange = screenWidth - 4*fifthWidth;
                 this.minRange = 0;
+                Log.d("*************", "Tower 4, max = " + maxRange + " min = " + minRange);
+                break;
+
         }
     }
 
@@ -147,6 +155,14 @@ public class AntibioticTower {
         } else {
             return false;
         }
+    }
+
+    public int getMaxRange() {
+        return this.maxRange;
+    }
+
+    public int getMinRange() {
+        return this.minRange;
     }
 
     /**

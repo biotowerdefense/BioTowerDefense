@@ -1,16 +1,17 @@
 package cisgvsu.biotowerdefense;
 
-import android.graphics.Point;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Observable;
 import java.util.Queue;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class controls the interaction of antibiotic towers and target.
@@ -25,13 +26,13 @@ public class Game extends Observable {
     private static final int NUM_TOWERS = 5;
 
     /** List of towers. */
-    public Vector<AntibioticTower> towers;
+    public CopyOnWriteArrayList<AntibioticTower> towers;
 
     /** Mapping of the target that are in each tower's range.  */
     public ConcurrentHashMap<AntibioticTower, Queue<Bacteria>> bacteriaToTower;
 
     /** Bacteria that aren't in any tower's range. */
-    private Vector<Bacteria> unassignedBacteria;
+    private CopyOnWriteArrayList<Bacteria> unassignedBacteria;
 
     /** Antibiotic resistance for new target. */
     private ConcurrentHashMap<BacteriaType, List<AntibioticType>> resistances;
@@ -40,10 +41,10 @@ public class Game extends Observable {
     private BacteriaThread bacteriaThread = new BacteriaThread();
 
     /** The set of threads that make the towers shoot. */
-    private List<TowerThread> towerThreads = new ArrayList<>();
+    private CopyOnWriteArrayList<TowerThread> towerThreads = new CopyOnWriteArrayList<>();
 
     /** The List of pills currently drawn on the screen */
-    private List<Pill> pills = new ArrayList<>();
+    private CopyOnWriteArrayList<Pill> pills = new CopyOnWriteArrayList<>();
 
     /** Control whether the game should be running the thread to add target. */
     private boolean addingBacteria;
@@ -52,13 +53,13 @@ public class Game extends Observable {
     private int score;
 
     /** Keep track of the current money in the game. */
-    private int money = 10;
+    private int money = 0;
 
     /** For other classes to see if the game is paused or not. */
     private boolean isPaused = true;
 
     /** All the towers we've purchased. */
-    private HashMap<AntibioticType, Integer> inventory;
+    private ConcurrentHashMap<AntibioticType, Integer> inventory;
 
     /** Message about target resistance being displayed to the user */
     private String resistanceString = "";
@@ -69,28 +70,18 @@ public class Game extends Observable {
      */
     public Game() {
         // Instantiate lists
-        towers = new Vector<>(NUM_TOWERS);
+        towers = new CopyOnWriteArrayList<>();
         for (int i = 0; i < NUM_TOWERS; i++) {
             towers.add(null);
             towerThreads.add(null);
         }
         bacteriaToTower = new ConcurrentHashMap<>();
         resistances = new ConcurrentHashMap<>();
-        unassignedBacteria = new Vector<>();
-        inventory = new HashMap<>();
+        unassignedBacteria = new CopyOnWriteArrayList<>();
+        inventory = new ConcurrentHashMap<>();
 
         // Start the game
         this.startGame();
-    }
-
-    /**
-     * Create a new game instance using the saved state
-     * represented by the string parameter.
-     * @param gameState A string representing the
-     *                  state of a saved game.
-     */
-    public Game(String gameState) {
-
     }
 
     /**
@@ -128,6 +119,17 @@ public class Game extends Observable {
         }
     }
 
+    public void checkForLoss() {
+        for (Bacteria b : getAllBacteria()) {
+            if (!b.isOnScreen()) {
+                setChanged();
+                ObserverMessage msg = new ObserverMessage(ObserverMessage.GAME_OVER,
+                        "Game over! A bacteria got past the antibiotics and infected you.\n Final Score: " + getScore());
+                notifyObservers(msg);
+            }
+        }
+    }
+
     /**
      * Get the value of the isPaused variable.
      * @return True if paused, false otherwise.
@@ -156,16 +158,12 @@ public class Game extends Observable {
      *
      * @return A list of all the target.
      */
-    public ArrayList<Bacteria> getAllBacteria() {
-        ArrayList<Bacteria> allBacteria = new ArrayList<>();
+    public CopyOnWriteArrayList<Bacteria> getAllBacteria() {
+        CopyOnWriteArrayList<Bacteria> allBacteria = new CopyOnWriteArrayList<>();
         for (Queue<Bacteria> queue : bacteriaToTower.values()) {
-            for (Bacteria bacteria : queue) {
-                allBacteria.add(bacteria);
-            }
+            allBacteria.addAll(queue);
         }
-        for (Bacteria bacteria : unassignedBacteria) {
-            allBacteria.add(bacteria);
-        }
+        allBacteria.addAll(unassignedBacteria);
         return allBacteria;
     }
 
@@ -173,7 +171,7 @@ public class Game extends Observable {
      * Get current list of pills shown on screen
      * @return
      */
-    public List<Pill> getPills() {
+    public CopyOnWriteArrayList<Pill> getPills() {
         return pills;
     }
 
@@ -181,7 +179,7 @@ public class Game extends Observable {
      * Set the list of Pills that are currently being shown on screen
      * @param pills
      */
-    public void setPills(List<Pill> pills) {
+    public void setPills(CopyOnWriteArrayList<Pill> pills) {
         this.pills = pills;
     }
 
@@ -201,7 +199,7 @@ public class Game extends Observable {
      * Get our inventory.
      * @return The list of towers we've purchased.
      */
-    public HashMap<AntibioticType, Integer> getInventory() {
+    public ConcurrentHashMap<AntibioticType, Integer> getInventory() {
         return this.inventory;
     }
 
@@ -269,20 +267,22 @@ public class Game extends Observable {
      * @param tower The tower we're adding
      * @return The updated list of towers in the game, null if location is invalid.
      */
-    public Vector<AntibioticTower> addTower(AntibioticTower tower, int newLocation) {
+    public CopyOnWriteArrayList<AntibioticTower> addTower(AntibioticTower tower, int newLocation) {
         // Make sure location is valid
         if (newLocation > NUM_TOWERS - 1 || newLocation < 0) {
             return null;
         } else {
             // Get rid of tower currently at that location if it exists
             AntibioticTower oldTower = null;
-            if (!towers.isEmpty() && towers.get(newLocation) != null) {
+            if (!towers.isEmpty()) {
                 oldTower = towers.remove(newLocation);
-                addToInventory(oldTower.getType());
+                if (oldTower != null) {
+                    addToInventory(oldTower.getType());
 
-                // Stop shooting thread for this tower
-                towerThreads.remove(newLocation);
-                oldTower.setShooting(false);
+                    // Stop shooting thread for this tower
+                    towerThreads.remove(newLocation);
+                    oldTower.setShooting(false);
+                }
             }
 
             // Make a new tower and add it to the list
@@ -348,14 +348,17 @@ public class Game extends Observable {
         Queue<Bacteria> bacteria = bacteriaToTower.get(tower);
         Bacteria first = bacteria.peek();
 
-        if (first != null && !resistant(first, tower.getType())) {
+        if (first != null && tower.inRange(first.getX()) && !resistant(first, tower.getType())) {
+            Log.d("****************", "Tower min = " + tower.getMinRange() + " tower max = " + tower.getMaxRange() + " bac = " + first.getX());
             int health = first.getHealth();
             int power = tower.getPower();
 
             if (power >= health) {
-                bacteria.remove();
+                try {
+                    bacteria.remove();
+                } catch (NoSuchElementException e) {}
                 //get a score bonus for killing a target
-                score++;
+                score += 15;
                 return true;
             } else {
                 first.setHealth(health - power);
@@ -417,7 +420,9 @@ public class Game extends Observable {
                 resistanceString = bacteria.getType() + " has become resistant to " +  antibiotic.toString();
                 // Call setChanged in Observable & notify observers
                 setChanged();
-                notifyObservers(bacteria.getType() + " has become resistant to " + antibiotic);
+                ObserverMessage msg = new ObserverMessage(ObserverMessage.RESISTANCE,
+                        bacteria.getType() + " has become resistant to " + antibiotic);
+                notifyObservers(msg);
                 Log.d("tag", "Resistant? true");
                 return true;
             } else {
@@ -487,6 +492,8 @@ public class Game extends Observable {
             AntibioticTower next = towers.get(nextIndex);
             if (next != null) {
                 bacteriaToTower.get(next).add(bacteria);
+            } else {
+                unassignedBacteria.add(bacteria);
             }
         } else {
             unassignedBacteria.add(bacteria);
@@ -506,7 +513,7 @@ public class Game extends Observable {
             tower.setShooting(true);
             int index = towers.indexOf(tower);
             TowerThread t = towerThreads.get(index);
-            if (!t.isAlive()) {
+            if (t != null && !t.isAlive()) {
                 t.start();
             }
         }
@@ -549,52 +556,6 @@ public class Game extends Observable {
     }
 
     /**
-     * Create a string that represents the state of the
-     * game that can be used to create a new game instance in
-     * the same state.
-     * @return
-     */
-    public String saveGameState() {
-        String state = "";
-
-        // Get all the towers we have placed
-        String towers = "TOWERS[";
-        for (AntibioticTower t :this.towers) {
-            if (t == null) {
-                towers += "null,";
-            } else {
-                towers += AntibioticType.toString(t.getType()) + ",";
-            }
-        }
-        towers += "]\n";
-        state += towers;
-
-        // Get all the towers in our inventory
-        String inventory = "INVENTORY[";
-        for (AntibioticType type : this.inventory.keySet()) {
-            inventory += AntibioticType.toString(type) + ":" + this.inventory.get(type) + ",";
-        }
-        inventory += "]\n";
-        state += inventory;
-
-        // Get all the target on the screen
-        String bacteria = "BACTERIA[";
-
-        bacteria += "]\n";
-        state += bacteria;
-
-        // Get our score
-        String score = "SCORE[" + this.score + "]\n";
-        state += score;
-
-        // Get our money
-        String money = "MONEY[" + this.money + "]\n";
-        state += money;
-
-        return state;
-    }
-
-    /**
      * Thread to shoot the tower.
      */
     private class TowerThread extends Thread {
@@ -616,8 +577,8 @@ public class Game extends Observable {
         public void run() {
             Log.d("**********", "made it into tower thread");
             while (tower.getShooting()) {
-                boolean dead = shootBacteria(tower);
                 tower.setAddPill(true);
+                boolean dead = shootBacteria(tower);
                 Log.d("tag", "shot target, dead =" + dead);
                 try {
                     sleep(1000);
@@ -640,13 +601,19 @@ public class Game extends Observable {
         public void run() {
             Log.d("***********", "made it into bac thread");
             while (addingBacteria) {
-                Log.d("***********", "Total target: " + getAllBacteria().size());
                 //Add to score once a second while game is running (aka target is being added)
-                score++;
+                score += 100;
+                money++;
                 addBacteria(BacteriaType.staph);
                 for (AntibioticTower t : towers) {
                     if (t != null && bacteriaToTower.get(t).peek() != null && !t.inRange(bacteriaToTower.get(t).peek().getX())) {
                         moveBacteriaToNextTower(t);
+                    }
+                    for (Bacteria b : unassignedBacteria) {
+                        if (t != null && t.inRange(b.getX())) {
+                            unassignedBacteria.remove(b);
+                            bacteriaToTower.get(t).add(b);
+                        }
                     }
                 }
                 try {

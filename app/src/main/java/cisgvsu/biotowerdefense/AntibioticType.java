@@ -22,11 +22,11 @@ public enum AntibioticType {
      public static int getCost(AntibioticType type) {
          switch (type) {
              case penicillin:
-                 return 1;
+                 return 20;
              case vancomycin:
-                 return 2;
+                 return 30;
              case linezolid:
-                 return 3;
+                 return 40;
              default:
                  return 0;
          }

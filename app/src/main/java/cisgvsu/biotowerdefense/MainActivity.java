@@ -129,18 +129,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
-        BioTowerDefense app = (BioTowerDefense) getApplicationContext();
-        final Game game = app.getGame();
-
-        String state = game.saveGameState();
-        savedInstanceState.putString(GAME_STATE, state);
-        Log.d("*****************", state);
-        super.onSaveInstanceState(savedInstanceState);
-
-
-    }
 
     /**
      * Launch the store/inventory screen and pass to it which tower was pressed.
@@ -167,28 +155,58 @@ public class MainActivity extends AppCompatActivity implements Observer {
      */
     @Override
     public void update(Observable o, Object arg) {
-        Log.d("tag", (String) arg);
-        final String msg = (String) arg;
+        // Get the message we were sent, handle depending on type
+        ObserverMessage msg = (ObserverMessage) arg;
+
+        // Get game object
         BioTowerDefense app = (BioTowerDefense) getApplicationContext();
         final Game game = app.getGame();
 
-        // We have to run this on the UI thread to avoid errors
-        new Thread() {
-            public void run() {
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            // Pause game, show dialog
-                            game.stopGame();
-                            getDialog(msg).show();
-                        } catch (Exception e) {
-                            e.printStackTrace();
+        if (msg.getType() == ObserverMessage.RESISTANCE) {
+            // Bacteria became resistance
+            final String text = msg.getText();
+
+            // We have to run this on the UI thread to avoid errors
+            new Thread() {
+                public void run() {
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                // Pause game, show dialog
+                                game.stopGame();
+                                getDialog(text, true).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                });
-            }
-        }.start();
+                    });
+                }
+            }.start();
+
+        } else if (msg.getType() == ObserverMessage.GAME_OVER) {
+            // Game has been lost
+            final String text = msg.getText();
+            app.startNew();
+            ((GameSurfaceView) findViewById(R.id.surfaceView)).setGame(game);
+
+            new Thread() {
+                public void run() {
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                // Pause game, show dialog
+                                game.stopGame();
+                                getDialog(text, false).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            }.start();
+        }
     }
 
     /**
@@ -196,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
      * @param msg Message to be shown in dialog.
      * @return The dialog.
      */
-    private AlertDialog getDialog(String msg) {
+    private AlertDialog getDialog(String msg, final boolean restartOnClose) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(msg);
         BioTowerDefense app = (BioTowerDefense) getApplicationContext();
@@ -206,8 +224,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Restart game on close
-                game.restartGame();
+                if (restartOnClose) {
+                    // Restart game on close
+                    game.restartGame();
+                }
             }
         });
 

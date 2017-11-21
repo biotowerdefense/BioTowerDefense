@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameSurfaceView extends SurfaceView {
 
@@ -167,7 +168,7 @@ public class GameSurfaceView extends SurfaceView {
 
                 //Locate and draw target
                 if (this.game != null) {
-                    ArrayList<Bacteria> allBacteria = game.getAllBacteria();
+                    CopyOnWriteArrayList<Bacteria> allBacteria = game.getAllBacteria();
                     for (Bacteria bac : allBacteria) {
                         if (!bac.isInitialPositionSet()) {
                             bac.setX(this.width + 10);
@@ -175,7 +176,10 @@ public class GameSurfaceView extends SurfaceView {
                             bac.setInitialPositionSet(true);
                         }
                         canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
-                        moveBacteria(bac);
+                        if (!game.isPaused()) {
+                            moveBacteria(bac);
+                            game.checkForLoss();
+                        }
                     }
                     //Log.d("BAC", "" + allBacteria.size());
                 }
@@ -211,7 +215,7 @@ public class GameSurfaceView extends SurfaceView {
                                     break;
                             }
                             if (pill != null) {
-                                List<Pill> pills = game.getPills();
+                                CopyOnWriteArrayList<Pill> pills = game.getPills();
                                 pills.add(pill);
                                 game.setPills(pills);
                                 canvas.drawBitmap(pillBmp, pill.getX(), pill.getY(), null);
@@ -241,7 +245,7 @@ public class GameSurfaceView extends SurfaceView {
         private void movePill(Pill pill) {
             if (pill.getTargetBacteria() == null || !pill.getTargetBacteria().isOnScreen()) {
                 //remove pill
-                List<Pill> pills = game.getPills();
+                CopyOnWriteArrayList<Pill> pills = game.getPills();
                 pills.remove(pill);
                 game.setPills(pills);
             } else {
