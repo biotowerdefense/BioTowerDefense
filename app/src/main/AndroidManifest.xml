@@ -7,7 +7,7 @@
         android:required="true" />
 
     <application
-        android:name="cisgvsu.biotowerdefense.BioTowerDefense"
+        android:name=".BioTowerDefense"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -31,6 +31,15 @@
             android:label="@string/title_activity_store_inventory"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cisgvsu.biotowerdefense.MainActivity" />
+        </activity>
+        <activity
+            android:name=".LibraryActivity"
+            android:label="@string/title_activity_library"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cisgvsu.biotowerdefense.MainActivity" />

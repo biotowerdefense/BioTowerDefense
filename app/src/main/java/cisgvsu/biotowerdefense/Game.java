@@ -80,15 +80,7 @@ public class Game extends Observable {
         unassignedBacteria = new CopyOnWriteArrayList<>();
         inventory = new ConcurrentHashMap<>();
 
-        // Start the game
-        this.startGame();
-    }
-
-    /**
-     * Start the game by giving one freebie penicillin tower
-     * in the inventory.
-     */
-    public void startGame() {
+        // Put one penicillin tower in the inventory to start with
         this.inventory.put(AntibioticType.penicillin, 1);
     }
 
@@ -119,12 +111,16 @@ public class Game extends Observable {
         }
     }
 
+    /**
+     * See if any of the bacteria are off the screen and if so,
+     * update observers of the loss.
+     */
     public void checkForLoss() {
         for (Bacteria b : getAllBacteria()) {
             if (!b.isOnScreen()) {
                 setChanged();
                 ObserverMessage msg = new ObserverMessage(ObserverMessage.GAME_OVER,
-                        "Game over! A bacteria got past the antibiotics and infected you.\n Final Score: " + getScore());
+                        "Game over! A bacteria got past the antibiotics and infected you.\nFinal Score: " + getScore());
                 notifyObservers(msg);
             }
         }

@@ -13,8 +13,9 @@ public class BioTowerDefense extends Application {
         return game;
     }
 
-    public void startNew() {
+    public Game startNew() {
         game = new Game();
+        return game;
     }
 
 }

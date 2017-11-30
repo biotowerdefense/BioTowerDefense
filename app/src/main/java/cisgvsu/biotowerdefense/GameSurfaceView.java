@@ -125,8 +125,6 @@ public class GameSurfaceView extends SurfaceView {
             this.pillBmp = pillBmp;
             this.width = width;
             this.height = height;
-            //this.game = new Game();
-            //game.startGame();
         }
 
         public void setRunnable(boolean run) {

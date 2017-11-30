@@ -24,8 +24,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     public static final String EXTRA_TOWER_POSITION = "cisgvsu.biotowerdefense.TOWER_POSITION";
     public static final String EXTRA_INVENTORY = "cisgvsu.biotowerdefense.EXTRA_INVENTORY";
     public static final String EXTRA_MONEY = "cisgvsu.biotowerdefense.EXTRA_MONEY";
-    public static final String GAME_STATE = "cisgvsu.biotowerdefense.GAME_STATE";
-    //public final Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +39,24 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         // Control starting and pausing the game
         final Button startStop = (Button) findViewById(R.id.startStop);
+        if (game.isPaused()) {
+            Log.d("*****************", "game is paused");
+            startStop.setText("Start");
+        } else {
+            Log.d("*****************", "game is not paused!");
+            startStop.setText("Pause");
+        }
+
+        // Set click listener for library button
+        final Button library = (Button) findViewById(R.id.library);
+        library.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                game.stopGame();
+                launchLibrary();
+            }
+        });
+
         startStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,6 +145,19 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set appropriate text for start/stop button
+        Button startStop = (Button) findViewById(R.id.startStop);
+        BioTowerDefense app = (BioTowerDefense) getApplicationContext();
+        Game game = app.getGame();
+        if (game.isPaused()) {
+            startStop.setText("Start");
+        } else {
+            startStop.setText("Pause");
+        }
+    }
 
     /**
      * Launch the store/inventory screen and pass to it which tower was pressed.
@@ -146,6 +175,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
         startActivity(intent);
     }
 
+    public void launchLibrary() {
+        Intent intent = new Intent(this, LibraryActivity.class);
+        startActivity(intent);
+    }
 
     /**
      * If we get updated from the game that something has become resistant,
@@ -187,8 +220,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         } else if (msg.getType() == ObserverMessage.GAME_OVER) {
             // Game has been lost
             final String text = msg.getText();
-            app.startNew();
-            ((GameSurfaceView) findViewById(R.id.surfaceView)).setGame(game);
+            ((GameSurfaceView) findViewById(R.id.surfaceView)).setGame(app.startNew());
 
             new Thread() {
                 public void run() {
@@ -197,7 +229,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
                         public void run() {
                             try {
                                 // Pause game, show dialog
-                                game.stopGame();
                                 getDialog(text, false).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
