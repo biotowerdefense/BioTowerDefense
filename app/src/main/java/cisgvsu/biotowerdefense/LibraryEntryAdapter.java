@@ -16,14 +16,16 @@ import android.widget.TextView;
 public class LibraryEntryAdapter extends ArrayAdapter<String> {
 
     private final Context context;
-    private final String[] values;
-    private final AntibioticType[] types;
+    private final int[] values;
+    private final AntibioticType[] abTypes;
+    private final BacteriaType[] bacTypes;
 
-    public LibraryEntryAdapter(Context context, String[] values, AntibioticType[] types) {
-        super(context, -1, values);
+    public LibraryEntryAdapter(Context context, int[] values, AntibioticType[] abTypes, BacteriaType[] bacTypes) {
+        super(context, -1, new String[6]);
         this.context = context;
         this.values = values;
-        this.types = types;
+        this.abTypes = abTypes;
+        this.bacTypes = bacTypes;
     }
 
     @Override
@@ -32,17 +34,25 @@ public class LibraryEntryAdapter extends ArrayAdapter<String> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.rowlayout, parent, false);
 
-        // Set label text
-        TextView labelText = (TextView) rowView.findViewById(R.id.label);
-        labelText.setText(AntibioticType.toString(types[position]));
-
         // Set detail text
         TextView detailText = (TextView) rowView.findViewById(R.id.detail);
         detailText.setText(values[position]);
 
+        // Set label text
+        TextView labelText = (TextView) rowView.findViewById(R.id.label);
+        if (position < 3) {
+            labelText.setText(AntibioticType.toString(abTypes[position]));
+        } else {
+            labelText.setText(BacteriaType.getLongName(bacTypes[position-3]));
+        }
+
         // Set icon
         ImageView img = (ImageView) rowView.findViewById(R.id.icon);
-        img.setImageResource(AntibioticType.getImage(types[position]));
+        if (position < 3) {
+            img.setImageResource(AntibioticType.getImage(abTypes[position]));
+        } else {
+            img.setImageResource(BacteriaType.getImage(bacTypes[position-3]));
+        }
 
         return rowView;
     }

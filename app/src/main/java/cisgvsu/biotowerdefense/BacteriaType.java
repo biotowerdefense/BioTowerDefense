@@ -43,4 +43,30 @@ public enum BacteriaType {
                 return null;
         }
     }
+
+    public static int getImage(BacteriaType type) {
+        switch (type) {
+            case staph:
+                return R.drawable.bacteria;
+            case pneumonia:
+                return R.drawable.bacteria;
+            case strep:
+                return R.drawable.bacteria;
+            default:
+                return 0;
+        }
+    }
+
+    public static int getDescription(BacteriaType type) {
+       switch (type) {
+           case staph:
+                return R.string.staph_description;
+           case pneumonia:
+               return R.string.pneumonia_description;
+           case strep:
+               return R.string.strep_desription;
+           default:
+               return 0;
+       }
+    }
 }

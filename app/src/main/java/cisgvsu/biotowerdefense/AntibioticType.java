@@ -70,29 +70,16 @@ public enum AntibioticType {
          }
      }
 
-     public static String getDescription(AntibioticType type) {
+     public static int getDescription(AntibioticType type) {
         switch (type) {
             case penicillin:
-                return "Penicillin (PCN or pen) antibiotics were among the first medications to be " +
-                        "effective against many bacterial infections caused by staphylococci and " +
-                        "streptococci. Penicillins are still widely used today, though many types " +
-                        "of bacteria have developed resistance following extensive use.  Penicillin " +
-                        "was discovered in 1928 by Scottish scientist Alexander Fleming.  " +
-                        "Penicillin targets the cell wall of bacteria.";
+                return R.string.penicillin_description;
             case vancomycin:
-                return "Vancomycin is an antibiotic used to treat a number of bacterial infections.  " +
-                        "It is recommended intravenously as a treatment for complicated skin " +
-                        "infections, bloodstream infections, and meningitis caused by " +
-                        "Staphylococcus aureus.  Vancomycin targets the cell wall of bacteria.";
+                return R.string.vancomycin_description;
             case linezolid:
-                return "Linezolid is an antibiotic used for the treatment of infections caused by " +
-                        "Gram-positive bacteria that are resistant to other antibiotics.  " +
-                        "Linezolid is active against most Gram-positive bacteria that cause " +
-                        "disease, including streptococci, vancomycin-resistant enterococci (VRE), " +
-                        "and methicillin-resistant Staphylococcus aureus (MRSA).  Linezolid targets " +
-                        "the ribosome of bacteria.";
+                return R.string.linezolid_description;
             default:
-                return null;
+                return -1;
         }
      }
 }

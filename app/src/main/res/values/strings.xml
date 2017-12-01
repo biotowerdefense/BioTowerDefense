@@ -10,4 +10,71 @@
     <string name="startGame">Start</string>
     <string name="pauseGame">Pause</string>
     <string name="title_activity_library">LibraryActivity</string>
+
+    <string name="penicillin_description">Penicillin (PCN or pen) antibiotics were among the first
+        medications to be effective against many bacterial infections caused by staphylococci and
+        streptococci. Penicillins are still widely used today, though many types of bacteria have
+        developed resistance following extensive use.  Penicillin was discovered in 1928 by Scottish
+        scientist Alexander Fleming.  Penicillin targets the cell wall of bacteria.</string>
+
+    <string name="vancomycin_description">Vancomycin is an antibiotic used to treat a number of
+        bacterial infections.  It is recommended intravenously as a treatment for complicated skin
+        infections, bloodstream infections, and meningitis caused by Staphylococcus aureus.
+        Vancomycin targets the cell wall of bacteria.</string>
+
+    <string name="linezolid_description">Linezolid is an antibiotic used for the treatment of
+        infections caused by Gram-positive bacteria that are resistant to other antibiotics.
+        Linezolid is active against most Gram-positive bacteria that cause disease, including
+        streptococci, vancomycin-resistant enterococci (VRE), and methicillin-resistant
+        Staphylococcus aureus (MRSA).  Linezolid targets the ribosome of bacteria.</string>
+
+    <string name="staph_description">Staphylococcus aureus is among the most common hospital
+        acquired pathogens. It is a normal inhabitant of the skin and mucous membranes in the
+        nose of a healthy human.  Approximately 30% of the normal healthy population is affected
+        by S. aureus as it asymptomatically colonizes on the skin of human hosts. Though some host
+        colonization can be benign, a puncture or break in the skin can prompt this bacterium to
+        enter a wound and cause infections. The best preventive measure is simply regular hand
+        washing.  S. aureus is the most common cause of staph infections and is responsible for
+        various diseases including: mild skin infections (impetigo, folliculitis, etc.), invasive
+        diseases (wound infections, osteomyelitis, bacteremia with metastatic complications, etc.),
+        and toxin mediated diseases (food poisoning, toxic shock syndrome or TSS, scaled skin
+        syndrome, etc.).  MRSA: The first serious emergence of antibiotic resistance staph occurred
+        with a specific strain we refer to as Methicillin-Resistant Staphylococcus aureus,
+        abbreviated as MRSA. This strain expressed a modified penicillin-binding protein and
+        is present in 4 forms of Staph.</string>
+
+    <string name="strep_desription">Streptococcus pyogenes, also known as the flesh eating bacteria,
+        is the most pathogenic bacterium in the whole genus. The name pyogenes comes from the word
+        pyogenic, which is a classification for the streptococci that are associated with pus
+        formation. The effects of this microbe range from mild illnesses such as strep throat and
+        impetigo to more serious diseases such as scarlet fever, glomerulonephritis, and necrotizing
+        fasciitis.  However, if strep throat is untreated, it will lead to rheumatic fever, which is
+        pretty rare now in the United States but was a more serious problem before the 20th century.
+        S. pyogenes usually begins infection on the surface of the skin or in the throat. From
+        there, the bacterium begins to spread into deeper areas of the skin, which can potentially
+        lead to life-threatening   Streptococcus pyogenes is an unusually successful pathogen
+        because of many different properties. First of all, the organism is able to adhere to the
+        cells of its host with strong adhering mechanisms, which is important because the organism
+        would be easily removed by mucus or salivary fluid.  Not only does Streptococcus pyogenes
+        adhere to its host cells, but it also invades them.  Streptococcus pyogenes affects its
+        hosts in many different ways and causes a large range of diseases. The Center for Disease
+        Control and Prevention (CDC) reports some symptoms of the diseases caused by Streptococcus
+        pyogenes. They range from mild to severe, such as fever, severe pain, dizziness, and red
+        rash at wound site. The symptoms at first might not seem severe, but in some cases the
+        diseases have caused death to certain individuals.
+    </string>
+
+    <string name="pneumonia_description">Klebsiella pneumoniae is a gram negative bacterium. It is
+        rod-shaped and measures 2 µm by 0.5 µm. In 1882, Friedlander C. Uber first discovered
+        Klebsiella to be a pathogen that caused pneumonia. Many hospital cases around the world
+        have been linked to K. pneumoniae. K. pneumoniae is commonly found in the gastrointestinal
+        tract and hands of hospital personnel. The reason for its pathogenicity is the thick capsule
+        layer surrounding the bacterium.   K. pneumoniae is an important cause of human infections.
+        Infections or diseases are usually nosocomial or hospital-acquired. In 1998, K. pneumoniae
+        and K. oxytoca accounted for 8% of nosocomial bacterial infections in the United States and
+        in Europe. Diseases include urinary tract infections, pneumonia, septicemias, and soft
+        tissue infections. The diseases caused by K. pneumoniae can result in death for patients
+        who are immunodeficient. Treatment is done by antibiotics such as clinafloxacin. But, there
+        are an increasing amount of antibiotic-resistance strains. Ciprofloxacin is an antibiotic
+        that is becoming less effective.</string>
 </resources>
