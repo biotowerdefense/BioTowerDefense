@@ -47,11 +47,11 @@ public enum BacteriaType {
     public static int getImage(BacteriaType type) {
         switch (type) {
             case staph:
-                return R.drawable.bacteria;
+                return R.drawable.bacteria_staph;
             case pneumonia:
-                return R.drawable.bacteria;
+                return R.drawable.bacteria_pneumonia;
             case strep:
-                return R.drawable.bacteria;
+                return R.drawable.bacteria_strep;
             default:
                 return 0;
         }

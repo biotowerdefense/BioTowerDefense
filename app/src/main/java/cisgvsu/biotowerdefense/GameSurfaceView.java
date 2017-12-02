@@ -55,13 +55,12 @@ public class GameSurfaceView extends SurfaceView {
 
         // Get the bitmaps that we'll draw
         Bitmap bg = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
-        Bitmap bac = BitmapFactory.decodeResource(getResources(), R.drawable.bacteria);
         Bitmap pill = BitmapFactory.decodeResource(getResources(), R.drawable.pill);
 
         // Scale the background
         bg = Bitmap.createScaledBitmap(bg, screenWidth, screenHeight, false);
 
-        thread = new DrawingThread(getHolder(), bg, bac, pill, screenWidth, screenHeight);
+        thread = new DrawingThread(getHolder(), bg, pill, screenWidth, screenHeight);
 
         // Set up SurfaceHolder for drawing
         SurfaceHolder holder = getHolder();
@@ -100,8 +99,10 @@ public class GameSurfaceView extends SurfaceView {
         private Canvas canvas;
         private boolean run = false;
         private Bitmap bg;
-        private Bitmap bacBmp;
         private Bitmap pillBmp;
+        private Bitmap staphBmp;
+        private Bitmap strepBmp;
+        private Bitmap pneumoniaBmp;
         private int width;
         private int height;
         private Game game;
@@ -113,7 +114,7 @@ public class GameSurfaceView extends SurfaceView {
         private int renderedMoney;
         private String renderedMoneyString;
 
-        public DrawingThread(SurfaceHolder holder, Bitmap bg, Bitmap bacBmp, Bitmap pillBmp, int width, int height) {
+        public DrawingThread(SurfaceHolder holder, Bitmap bg, Bitmap pillBmp, int width, int height) {
             this.paintText = new Paint();
             paintText.setTextSize(50);
             paintText.setColor(Color.DKGRAY);
@@ -121,10 +122,14 @@ public class GameSurfaceView extends SurfaceView {
 
             this.holder = holder;
             this.bg = bg;
-            this.bacBmp = bacBmp;
             this.pillBmp = pillBmp;
             this.width = width;
             this.height = height;
+
+            staphBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bacteria_staph);
+            strepBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bacteria_strep);
+            pneumoniaBmp = BitmapFactory.decodeResource(getResources(), R.drawable.bacteria_pneumonia);
+
         }
 
         public void setRunnable(boolean run) {
@@ -133,6 +138,19 @@ public class GameSurfaceView extends SurfaceView {
 
         public void setGame(Game g) {
             this.game = g;
+        }
+
+        private Bitmap getBmp(BacteriaType type) {
+            switch (type) {
+                case staph:
+                    return staphBmp;
+                case strep:
+                    return strepBmp;
+                case pneumonia:
+                    return pneumoniaBmp;
+                default:
+                    return null;
+            }
         }
 
         @Override
@@ -173,7 +191,7 @@ public class GameSurfaceView extends SurfaceView {
                             bac.setY(300);
                             bac.setInitialPositionSet(true);
                         }
-                        canvas.drawBitmap(bacBmp, bac.getX(), bac.getY(), null);
+                        canvas.drawBitmap(getBmp(bac.getType()), bac.getX(), bac.getY(), null);
                         if (!game.isPaused()) {
                             moveBacteria(bac);
                             game.checkForLoss();

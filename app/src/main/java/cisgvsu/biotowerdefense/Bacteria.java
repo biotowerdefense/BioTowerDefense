@@ -1,5 +1,8 @@
 package cisgvsu.biotowerdefense;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.util.ArrayList;
 
 /**
@@ -158,4 +161,5 @@ public class Bacteria {
     public void setInitialPositionSet(boolean isSet) {
         this.initialPositionSet = isSet;
     }
+
 }

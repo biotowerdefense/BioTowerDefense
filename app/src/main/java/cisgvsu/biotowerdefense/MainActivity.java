@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                             try {
                                 // Pause game, show dialog
                                 game.stopGame();
-                                getDialog(text, true).show();
+                                getDialog(text, true, false).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
                         public void run() {
                             try {
                                 // Pause game, show dialog
-                                getDialog(text, false).show();
+                                getDialog(text, false, true).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
      * @param msg Message to be shown in dialog.
      * @return The dialog.
      */
-    private AlertDialog getDialog(String msg, final boolean restartOnClose) {
+    private AlertDialog getDialog(String msg, final boolean restartOnClose, final boolean newGame) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(msg);
         BioTowerDefense app = (BioTowerDefense) getApplicationContext();
@@ -258,6 +258,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 if (restartOnClose) {
                     // Restart game on close
                     game.restartGame();
+                } if (newGame) {
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
                 }
             }
         });

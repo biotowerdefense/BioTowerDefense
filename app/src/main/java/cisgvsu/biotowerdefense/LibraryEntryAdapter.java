@@ -43,7 +43,8 @@ public class LibraryEntryAdapter extends ArrayAdapter<String> {
         if (position < 3) {
             labelText.setText(AntibioticType.toString(abTypes[position]));
         } else {
-            labelText.setText(BacteriaType.getLongName(bacTypes[position-3]));
+            String title = BacteriaType.getLongName(bacTypes[position-3]) + " (" + BacteriaType.getShortName(bacTypes[position-3]) + ")";
+            labelText.setText(title);
         }
 
         // Set icon

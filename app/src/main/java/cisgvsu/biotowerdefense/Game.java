@@ -383,7 +383,8 @@ public class Game extends Observable {
     private boolean resistant(Bacteria bacteria, AntibioticType antibiotic) {
         // Check if this type of target is resistant to this type of antibiotic,
         // and if the specific target is not exempt from resistance
-        if (!resistances.isEmpty() && resistances.get(bacteria.getType()).contains(antibiotic) &&
+        if (!resistances.isEmpty() && resistances.get(bacteria.getType()) != null &&
+                resistances.get(bacteria.getType()).contains(antibiotic) &&
                 !bacteria.isExempt(antibiotic)) {
             return true;
         } else {
@@ -600,7 +601,20 @@ public class Game extends Observable {
                 //Add to score once a second while game is running (aka target is being added)
                 score += 100;
                 money++;
-                addBacteria(BacteriaType.staph);
+
+                // If score is under 2000, always add staph. If it's over 2000 but under 4000,
+                // split between staph and strep, and over 4000, split between all three
+                BacteriaType type;
+                if (score < 2000) {
+                    type = BacteriaType.staph;
+                } else if (score < 4000) {
+                    type = Math.random() < .5 ? BacteriaType.staph : BacteriaType.strep;
+                } else {
+                    type = Math.random() < .33 ? BacteriaType.staph :
+                            Math.random() < .5 ? BacteriaType.strep : BacteriaType.pneumonia;
+                }
+                addBacteria(type);
+
                 for (AntibioticTower t : towers) {
                     if (t != null && bacteriaToTower.get(t).peek() != null && !t.inRange(bacteriaToTower.get(t).peek().getX())) {
                         moveBacteriaToNextTower(t);
