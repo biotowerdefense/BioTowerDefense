@@ -182,13 +182,23 @@ public class GameSurfaceView extends SurfaceView {
                 //Draw background
                 canvas.drawBitmap(bg, 0, 0, null);
 
+                // Draw path
+                Paint paint = new Paint();
+                paint.setColor(Color.argb(255, 132, 0, 21));
+                // Top chunk
+                canvas.drawRect(width/2-80, (height/3)-80, width, (height/3)+30, paint);
+                // Bottom chunk
+                canvas.drawRect(0, (height/3)*2-80, width/2+40, (height/3)*2+30, paint);
+                // Vertical chunk
+                canvas.drawRect(width/2-80, (height/3)-80, width/2+40, (height/3)*2+30, paint);
+
                 //Locate and draw target
                 if (this.game != null) {
                     CopyOnWriteArrayList<Bacteria> allBacteria = game.getAllBacteria();
                     for (Bacteria bac : allBacteria) {
                         if (!bac.isInitialPositionSet()) {
                             bac.setX(this.width + 10);
-                            bac.setY(300);
+                            bac.setY(height/3-70);
                             bac.setInitialPositionSet(true);
                         }
                         canvas.drawBitmap(getBmp(bac.getType()), bac.getX(), bac.getY(), null);
@@ -247,8 +257,10 @@ public class GameSurfaceView extends SurfaceView {
         }
 
         public void moveBacteria(Bacteria bacteria) {
+            int moveDownPoint = width/2-70;
+            int moveLeftAgainPoint = (height/3)*2 - 70;
             if (bacteria.getX() > -100) {
-                if ((bacteria.getX() > 925 && bacteria.getY() < 375) || bacteria.getY() > 750) {
+                if ((bacteria.getX() > moveDownPoint && bacteria.getY() < 375) || bacteria.getY() > moveLeftAgainPoint) {
                     bacteria.setX(bacteria.getX() - 5);
                 } else {
                     bacteria.setY(bacteria.getY() + 5);

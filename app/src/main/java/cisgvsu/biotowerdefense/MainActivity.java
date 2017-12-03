@@ -220,7 +220,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
         } else if (msg.getType() == ObserverMessage.GAME_OVER) {
             // Game has been lost
             final String text = msg.getText();
-            ((GameSurfaceView) findViewById(R.id.surfaceView)).setGame(app.startNew());
+            Game g = app.startNew();
+            ((GameSurfaceView) findViewById(R.id.surfaceView)).setGame(g);
 
             new Thread() {
                 public void run() {

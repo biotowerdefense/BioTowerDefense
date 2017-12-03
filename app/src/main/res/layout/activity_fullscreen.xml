@@ -7,7 +7,7 @@
     <cisgvsu.biotowerdefense.GameSurfaceView
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,18 +29,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@android:color/transparent" />
+
             <ImageView
                 android:id="@+id/space2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@android:color/transparent" />
+
             <ImageView
                 android:id="@+id/tower1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/tower_placeholder" />
+
             <ImageView
                 android:id="@+id/tower0"
                 android:layout_width="0dp"
@@ -63,18 +66,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/tower_placeholder" />
+
             <ImageView
                 android:id="@+id/tower3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/tower_placeholder" />
+
             <ImageView
                 android:id="@+id/tower2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/tower_placeholder" />
+
             <ImageView
                 android:id="@+id/space4"
                 android:layout_width="0dp"
@@ -88,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:gravity="center"
+            android:gravity="center|bottom"
             android:orientation="horizontal">
 
             <ImageView
@@ -96,22 +102,24 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@android:color/transparent" />
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@android:color/transparent" />
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@android:color/transparent"/>
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@android:color/transparent" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@android:color/transparent" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/space" />
 
             <Button
                 android:id="@+id/library"
