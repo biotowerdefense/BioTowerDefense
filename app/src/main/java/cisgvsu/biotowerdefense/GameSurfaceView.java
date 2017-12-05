@@ -224,19 +224,19 @@ public class GameSurfaceView extends SurfaceView {
                             Pill pill = null;
                             switch (tower.getLocation()) {
                                 case 0:
-                                    pill = new Pill(1500, 200, game.bacteriaToTower.get(tower).peek(), 0);
+                                    pill = new Pill(width - 300, 200, game.bacteriaToTower.get(tower).peek(), 0);
                                     break;
                                 case 1:
-                                    pill = new Pill(1100, 200, game.bacteriaToTower.get(tower).peek(), 1);
+                                    pill = new Pill((width/4)*3 - 300, 200, game.bacteriaToTower.get(tower).peek(), 1);
                                     break;
                                 case 2:
-                                    pill = new Pill(1100, 450, game.bacteriaToTower.get(tower).peek(), 2);
+                                    pill = new Pill((width/4)*3 - 300, 450, game.bacteriaToTower.get(tower).peek(), 2);
                                     break;
                                 case 3:
-                                    pill = new Pill(570, 450, game.bacteriaToTower.get(tower).peek(), 3);
+                                    pill = new Pill(width/2 - 300, 450, game.bacteriaToTower.get(tower).peek(), 3);
                                     break;
                                 case 4:
-                                    pill = new Pill(260, 450, game.bacteriaToTower.get(tower).peek(), 4);
+                                    pill = new Pill(width/4 - 300, 450, game.bacteriaToTower.get(tower).peek(), 4);
                                     break;
                             }
                             if (pill != null) {
