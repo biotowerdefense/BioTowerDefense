@@ -15,21 +15,17 @@ public class Pill {
     /** Pill's current y coordinate position */
     private float y;
 
-    /** Pill's current x speed */
-    private float xSpeed;
-
-    /** Pill's current y speed */
-    private float ySpeed;
-
     /** The Bacteria that this pill is targeting */
     private Bacteria target;
 
-    public Pill(int x, int y, Bacteria target) {
+    /** The origin tower of this pill */
+    private int origin;
+
+    public Pill(int x, int y, Bacteria target, int origin) {
         this.x = x;
         this.y = y;
-        this.xSpeed = 0;
-        this.ySpeed = 0;
         this.target = target;
+        this.origin = origin;
     }
 
     public float getX() {
@@ -50,17 +46,21 @@ public class Pill {
         return target;
     }
 
-    public void updatePosition() {
-        //TODO EK: make this actually move the pill TOWARDS the bacteria
-        //move pill toward target
-        if (xSpeed == 0 && xSpeed == 0) {
-            xSpeed = (x- target.getX())/3;
-            ySpeed = (y- target.getY())/3;
-        }
-        xSpeed = xSpeed * (float) (2.5 / Math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed));
-        ySpeed = ySpeed * (float) (2.5 / Math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed));
+    public int getOrigin() {
+        return origin;
+    }
 
-        x += xSpeed;
-        y -= ySpeed;
+    public void updatePosition() {
+        switch (origin) {
+            case 2:
+                x -= 3;
+                break;
+            case 0:
+            case 1:
+            case 3:
+            case 4:
+                y += 3;
+                break;
+        }
     }
 }

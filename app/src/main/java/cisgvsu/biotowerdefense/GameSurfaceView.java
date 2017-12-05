@@ -223,21 +223,20 @@ public class GameSurfaceView extends SurfaceView {
                             tower.setAddPill(false);
                             Pill pill = null;
                             switch (tower.getLocation()) {
-                                //TODO EK: Start pill placement better
                                 case 0:
-                                    pill = new Pill(1500, 200, game.bacteriaToTower.get(tower).peek());
+                                    pill = new Pill(1500, 200, game.bacteriaToTower.get(tower).peek(), 0);
                                     break;
                                 case 1:
-                                    pill = new Pill(1000, 200, game.bacteriaToTower.get(tower).peek());
+                                    pill = new Pill(1100, 200, game.bacteriaToTower.get(tower).peek(), 1);
                                     break;
                                 case 2:
-                                    pill = new Pill(1000, 450, game.bacteriaToTower.get(tower).peek());
+                                    pill = new Pill(1100, 450, game.bacteriaToTower.get(tower).peek(), 2);
                                     break;
                                 case 3:
-                                    pill = new Pill(550, 450, game.bacteriaToTower.get(tower).peek());
+                                    pill = new Pill(570, 450, game.bacteriaToTower.get(tower).peek(), 3);
                                     break;
                                 case 4:
-                                    pill = new Pill(300, 450, game.bacteriaToTower.get(tower).peek());
+                                    pill = new Pill(260, 450, game.bacteriaToTower.get(tower).peek(), 4);
                                     break;
                             }
                             if (pill != null) {
@@ -273,6 +272,13 @@ public class GameSurfaceView extends SurfaceView {
         private void movePill(Pill pill) {
             if (pill.getTargetBacteria() == null || !pill.getTargetBacteria().isOnScreen()) {
                 //remove pill
+                CopyOnWriteArrayList<Pill> pills = game.getPills();
+                pills.remove(pill);
+                game.setPills(pills);
+            } else if ((pill.getOrigin() == 2 && pill.getX() < width/2-80) ||
+                    ((pill.getOrigin() == 0 || pill.getOrigin() == 1)  && pill.getY() > (height/3)) ||
+                    ((pill.getOrigin() == 3 || pill.getOrigin() == 4)  && pill.getY() > (height/3)*2)){
+                // pill has moved beyond vein
                 CopyOnWriteArrayList<Pill> pills = game.getPills();
                 pills.remove(pill);
                 game.setPills(pills);
