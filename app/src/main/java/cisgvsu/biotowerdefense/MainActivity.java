@@ -261,6 +261,18 @@ public class MainActivity extends AppCompatActivity implements Observer {
                     game.restartGame();
                 } if (newGame) {
                     Intent intent = getIntent();
+
+                    // Clear old intents
+                    if (intent.hasExtra(InventoryFragment.EXTRA_TOWER_TO_PLACE)) {
+                        intent.removeExtra(InventoryFragment.EXTRA_TOWER_TO_PLACE);
+                        intent.removeExtra(InventoryFragment.EXTRA_TOWER_POSITION);
+                    }
+                    if (intent.hasExtra(StoreFragment.EXTRA_TOWER_TO_PLACE)) {
+                        intent.removeExtra(StoreFragment.EXTRA_TOWER_TO_PLACE);
+                        intent.removeExtra(StoreFragment.EXTRA_TOWER_POSITION);
+                    }
+
+                    // Finish activity and restart
                     finish();
                     startActivity(intent);
                 }

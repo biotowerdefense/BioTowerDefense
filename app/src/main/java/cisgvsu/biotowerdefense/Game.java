@@ -141,7 +141,7 @@ public class Game extends Observable {
      * @return Tower if it exists, null otherwise.
      */
     public AntibioticTower towerAtIndex(int index) {
-        if (index < towers.size()-1 && index >= 0) {
+        if (index < towers.size() && index >= 0) {
             return towers.get(index);
         } else {
             return null;
@@ -345,7 +345,6 @@ public class Game extends Observable {
         Bacteria first = bacteria.peek();
 
         if (first != null && tower.inRange(first.getX()) && !resistant(first, tower.getType())) {
-            Log.d("****************", "Tower min = " + tower.getMinRange() + " tower max = " + tower.getMaxRange() + " bac = " + first.getX());
             int health = first.getHealth();
             int power = tower.getPower();
 
@@ -398,6 +397,14 @@ public class Game extends Observable {
                     List list = new ArrayList<>();
                     list.add(antibiotic);
                     resistances.put(bacteria.getType(), list);
+                    String resistantStr = "";
+                    for (BacteriaType b : resistances.keySet()) {
+                        resistantStr += "bacteria: " + BacteriaType.getShortName(b);
+                        for (AntibioticType a : resistances.get(b)) {
+                            resistantStr += " " + AntibioticType.toString(a) + ",";
+                        }
+                    }
+                    Log.d("RESISTANCES", resistantStr);
                 } else {
                     resistances.get(bacteria.getType()).add(antibiotic);
                 }
@@ -420,10 +427,8 @@ public class Game extends Observable {
                 ObserverMessage msg = new ObserverMessage(ObserverMessage.RESISTANCE,
                         bacteria.getType() + " has become resistant to " + antibiotic);
                 notifyObservers(msg);
-                Log.d("tag", "Resistant? true");
                 return true;
             } else {
-                Log.d("tag", "Resistant? false");
                 return false;
             }
         }
@@ -572,11 +577,9 @@ public class Game extends Observable {
          */
         @Override
         public void run() {
-            Log.d("**********", "made it into tower thread");
             while (tower.getShooting()) {
                 tower.setAddPill(true);
-                boolean dead = shootBacteria(tower);
-                Log.d("tag", "shot target, dead =" + dead);
+                shootBacteria(tower);
                 try {
                     sleep(1000);
                 } catch (Exception e) {
@@ -596,7 +599,6 @@ public class Game extends Observable {
          */
         @Override
         public void run() {
-            Log.d("***********", "made it into bac thread");
             while (addingBacteria) {
                 //Add to score once a second while game is running (aka target is being added)
                 score += 100;

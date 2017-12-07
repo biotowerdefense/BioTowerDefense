@@ -178,7 +178,7 @@ public class GameSurfaceView extends SurfaceView {
          */
         public void draw(Canvas canvas) {
             if (canvas != null) {
-                canvas.drawColor(Color.BLACK);
+                canvas.drawColor(Color.TRANSPARENT);
                 //Draw background
                 canvas.drawBitmap(bg, 0, 0, null);
 
