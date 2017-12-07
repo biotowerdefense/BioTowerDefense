@@ -196,15 +196,17 @@ public class GameSurfaceView extends SurfaceView {
                 if (this.game != null) {
                     CopyOnWriteArrayList<Bacteria> allBacteria = game.getAllBacteria();
                     for (Bacteria bac : allBacteria) {
-                        if (!bac.isInitialPositionSet()) {
-                            bac.setX(this.width + 10);
-                            bac.setY(height/3-70);
-                            bac.setInitialPositionSet(true);
-                        }
-                        canvas.drawBitmap(getBmp(bac.getType()), bac.getX(), bac.getY(), null);
-                        if (!game.isPaused()) {
-                            moveBacteria(bac);
-                            game.checkForLoss();
+                        if (bac != null) {
+                            if (!bac.isInitialPositionSet()) {
+                                bac.setX(this.width + 10);
+                                bac.setY(height / 3 - 70);
+                                bac.setInitialPositionSet(true);
+                            }
+                            canvas.drawBitmap(getBmp(bac.getType()), bac.getX(), bac.getY(), null);
+                            if (!game.isPaused()) {
+                                moveBacteria(bac);
+                                game.checkForLoss();
+                            }
                         }
                     }
                     //Log.d("BAC", "" + allBacteria.size());
@@ -251,7 +253,7 @@ public class GameSurfaceView extends SurfaceView {
 
                 canvas.drawText(getScoreString(), 150, 100, paintText);
                 canvas.drawText(getMoneyString(), 500, 100, paintText);
-                canvas.drawText(game.getResistanceString(), canvas.getWidth()/2, canvas.getHeight() - 50, paintText);
+                canvas.drawText(game.getResistanceString(), canvas.getWidth()/3, canvas.getHeight() - 50, paintText);
             }
         }
 

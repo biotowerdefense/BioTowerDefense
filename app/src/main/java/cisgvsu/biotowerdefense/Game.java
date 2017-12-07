@@ -117,7 +117,7 @@ public class Game extends Observable {
      */
     public void checkForLoss() {
         for (Bacteria b : getAllBacteria()) {
-            if (!b.isOnScreen()) {
+            if (b != null && !b.isOnScreen()) {
                 setChanged();
                 ObserverMessage msg = new ObserverMessage(ObserverMessage.GAME_OVER,
                         "Game over! A bacteria got past the antibiotics and infected you.\nFinal Score: " + getScore());
@@ -178,17 +178,6 @@ public class Game extends Observable {
     public void setPills(CopyOnWriteArrayList<Pill> pills) {
         this.pills = pills;
     }
-
-
-    /**
-     * Add this tower to our inventory, location = -1 to indicate it's in inventory.
-     * @param type Type of tower to buy.
-     * @return The new inventory list.
-     *
-    public ArrayList<AntibioticTower> buyTower(AntibioticType type) {
-        this.inventory.add(new AntibioticTower(type, -1));
-        return this.inventory;
-    }*/
 
 
     /**
