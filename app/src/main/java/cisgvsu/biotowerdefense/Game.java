@@ -404,7 +404,7 @@ public class Game extends Observable {
                     Object obj[] = bacteriaToTower.get(t).toArray();
                     for (int i = 0; i < obj.length; i++) {
                         Bacteria b = (Bacteria) obj[i];
-                        if (b.getType().equals(bacteria.getType())) {
+                        if (b != null && b.getType().equals(bacteria.getType())) {
                             b.setExempt(antibiotic);
                         }
                     }
