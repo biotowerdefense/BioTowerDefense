@@ -1,12 +1,9 @@
 package cisgvsu.biotowerdefense;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import java.util.ArrayList;
 
 /**
- * The target objects for the game.
+ * The bacteria for the game.
  * Created by Kelsey on 8/31/2017.
  */
 public class Bacteria {
@@ -26,7 +23,10 @@ public class Bacteria {
     /** The value to be added to the player's score when this target is killed. */
     private int value;
 
+    /** X coordinate. */
     private int x;
+
+    /** Y coordinate. */
     private int y;
 
     /**
@@ -134,30 +134,51 @@ public class Bacteria {
         this.value = value;
     }
 
-    public boolean outOfRange() {
-        return false;
-    }
-
+    /**
+     * Get the x coordinate.
+     * @return
+     */
     public int getX() {
         return x;
     }
 
+    /**
+     * Set the x coordinate.
+     * @param x
+     */
     public void setX(int x) {
         this.x = x;
     }
 
+    /**
+     * Get the y coordinate.
+     * @return
+     */
     public int getY() {
         return y;
     }
 
+    /**
+     * Set the y coordinate.
+     * @param y
+     */
     public void setY(int y) {
         this.y = y;
     }
 
+    /**
+     * Check if the bacteria's initial position has been set by the game.
+     * @return
+     */
     public boolean isInitialPositionSet() {
         return this.initialPositionSet;
     }
 
+    /**
+     * Set whether or not this bacteria's initial position has been set
+     * by the game.
+     * @param isSet
+     */
     public void setInitialPositionSet(boolean isSet) {
         this.initialPositionSet = isSet;
     }

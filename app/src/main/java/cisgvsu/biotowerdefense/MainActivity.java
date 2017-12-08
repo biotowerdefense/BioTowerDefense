@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             }
         }
 
+        // Get handles to the tower imageviews.
         ArrayList<ImageView> towerImages = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             final int index = i;

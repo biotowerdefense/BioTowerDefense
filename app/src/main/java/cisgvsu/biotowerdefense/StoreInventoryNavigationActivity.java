@@ -12,6 +12,10 @@ import android.view.MenuItem;
 
 import java.util.ArrayList;
 
+/**
+ * Handle navigation between store and inventory tabs, mostly just passing information
+ * to them that we received from the main game activity about where to put a tower.
+ */
 public class StoreInventoryNavigationActivity extends AppCompatActivity {
 
     @Override

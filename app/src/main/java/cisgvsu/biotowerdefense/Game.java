@@ -15,11 +15,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class controls the interaction of antibiotic towers and target.
- * The only public methods are for starting and stopping the game, and
- * adding and removing towers.
- *
- * Kelsey Brennan
- * 9/22/17
  */
 public class Game extends Observable {
     /** The number of towers allowed in the game. */
@@ -218,7 +213,7 @@ public class Game extends Observable {
     }
 
     /**
-     * Retun the inventory as an arraylist of strings
+     * Return the inventory as an arraylist of strings
      * which indicates whether or not they've been placed
      * in the game.
      * @return
@@ -606,6 +601,7 @@ public class Game extends Observable {
                 }
                 addBacteria(type);
 
+                // Move the bacteria as needed
                 for (AntibioticTower t : towers) {
                     if (t != null && bacteriaToTower.get(t).peek() != null && !t.inRange(bacteriaToTower.get(t).peek().getX())) {
                         moveBacteriaToNextTower(t);

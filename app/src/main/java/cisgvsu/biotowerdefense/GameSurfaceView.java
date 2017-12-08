@@ -1,7 +1,6 @@
 package cisgvsu.biotowerdefense;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,46 +8,53 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.PorterDuff;
-import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * This class does all the drawing of the bacteria, the pills, and
+ * the path for the bacteria..
+ */
 public class GameSurfaceView extends SurfaceView {
 
-    DrawingThread thread;
-    Context context;
+    private DrawingThread thread;
+    private Context context;
     private Game game;
 
+    /**
+     * Constructor.
+     */
     public GameSurfaceView (Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
         init(context);
     }
 
+    /**
+     * Constructor.
+     * @param context
+     */
     public GameSurfaceView(Context context) {
         super(context);
         init(context);
     }
 
+    /**
+     * Get the size of the screen, scale background appropriately. Also create  bitmaps
+     * from all the image resources, and set up the drawing thread.
+     * @param context
+     */
     private void init(Context context) {
         // Find the screen size
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        //this.screenHeight = size.y;
-        //this.screenWidth = size.x;
 
         int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
         int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
@@ -114,6 +120,14 @@ public class GameSurfaceView extends SurfaceView {
         private int renderedMoney;
         private String renderedMoneyString;
 
+        /**
+         * Create a drawing thread and use the params to set up what we'll draw.
+         * @param holder
+         * @param bg
+         * @param pillBmp
+         * @param width
+         * @param height
+         */
         public DrawingThread(SurfaceHolder holder, Bitmap bg, Bitmap pillBmp, int width, int height) {
             this.paintText = new Paint();
             paintText.setTextSize(50);
@@ -132,14 +146,28 @@ public class GameSurfaceView extends SurfaceView {
 
         }
 
+        /**
+         * Toggle drawing.
+         * @param run
+         */
         public void setRunnable(boolean run) {
             this.run = run;
         }
 
+        /**
+         * Set the game object so we can get the positions for everything
+         * to draw.
+         * @param g
+         */
         public void setGame(Game g) {
             this.game = g;
         }
 
+        /**
+         * Get the bitmap for a given bacteria.
+         * @param type
+         * @return
+         */
         private Bitmap getBmp(BacteriaType type) {
             switch (type) {
                 case staph:
@@ -257,6 +285,10 @@ public class GameSurfaceView extends SurfaceView {
             }
         }
 
+        /**
+         * Move the bacteria across the path.
+         * @param bacteria
+         */
         public void moveBacteria(Bacteria bacteria) {
             int moveDownPoint = width/2-70;
             int moveLeftAgainPoint = (height/3)*2 - 70;
@@ -271,6 +303,10 @@ public class GameSurfaceView extends SurfaceView {
             }
         }
 
+        /**
+         * Move the pills toward the bacteria.
+         * @param pill
+         */
         private void movePill(Pill pill) {
             if (pill.getTargetBacteria() == null || !pill.getTargetBacteria().isOnScreen()) {
                 //remove pill
@@ -289,6 +325,10 @@ public class GameSurfaceView extends SurfaceView {
             }
         }
 
+        /**
+         * Get the score to be displayed.
+         * @return
+         */
         private String getScoreString() {
             //Only create new score string for new scores to help with garbage collector problems
             if (game.getScore() != this.renderedScore || this.renderedScoreString == null) {
@@ -298,6 +338,10 @@ public class GameSurfaceView extends SurfaceView {
             return renderedScoreString;
         }
 
+        /**
+         * Get the money to be displayed.
+         * @return
+         */
         private String getMoneyString() {
             //Only create new score string for new scores to help with garbage collector problems
             if (game.getMoney() != this.renderedMoney || this.renderedMoneyString == null) {

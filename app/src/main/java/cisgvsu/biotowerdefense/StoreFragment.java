@@ -15,7 +15,7 @@ import android.widget.GridView;
 import java.util.ArrayList;
 
 /**
- * Created by Kelsey on 11/5/2017.
+ * Control the contents of the store tab.
  */
 
 public class StoreFragment extends android.support.v4.app.Fragment {

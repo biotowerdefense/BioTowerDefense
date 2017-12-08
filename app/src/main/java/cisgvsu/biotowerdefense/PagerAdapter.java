@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
- * Created by Kelsey on 11/6/2017.
+ * Handles paging between tabs in store/inventory.
  */
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
@@ -26,7 +26,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-
                 return store;
             case 1:
                 return inventory;

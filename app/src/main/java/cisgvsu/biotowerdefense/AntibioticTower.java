@@ -157,10 +157,18 @@ public class AntibioticTower {
         }
     }
 
+    /**
+     * Get the max range for this tower.
+     * @return int representing max X coordinate
+     */
     public int getMaxRange() {
         return this.maxRange;
     }
 
+    /**
+     * Get the min range for this tower.
+     * @return int representing min X coordinate
+     */
     public int getMinRange() {
         return this.minRange;
     }

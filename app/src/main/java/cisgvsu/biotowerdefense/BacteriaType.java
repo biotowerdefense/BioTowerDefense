@@ -2,7 +2,7 @@ package cisgvsu.biotowerdefense;
 
 
 /**
- * Created by Kelsey on 9/8/2017.
+ * Bacteria enums that are available in the game.
  */
 
 public enum BacteriaType {
@@ -44,6 +44,11 @@ public enum BacteriaType {
         }
     }
 
+    /**
+     * Get the image resource for the bacteria type.
+     * @param type
+     * @return
+     */
     public static int getImage(BacteriaType type) {
         switch (type) {
             case staph:
@@ -57,6 +62,12 @@ public enum BacteriaType {
         }
     }
 
+    /**
+     * Get the string resource for the description of
+     * the bacteria type.
+     * @param type
+     * @return
+     */
     public static int getDescription(BacteriaType type) {
        switch (type) {
            case staph:
