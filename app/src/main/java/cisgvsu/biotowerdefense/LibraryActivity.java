@@ -24,26 +24,35 @@ public class LibraryActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        int[] list = new int[6];
-        list[0] = AntibioticType.getDescription(AntibioticType.penicillin);
-        list[1] = AntibioticType.getDescription(AntibioticType.vancomycin);
-        list[2] = AntibioticType.getDescription(AntibioticType.linezolid);
-        list[3] = BacteriaType.getDescription(BacteriaType.pneumonia);
-        list[4] = BacteriaType.getDescription(BacteriaType.strep);
-        list[5] = BacteriaType.getDescription(BacteriaType.staph);
+        // Description for each type
+        int[] details = new int[6];
+        details[0] = AntibioticType.getDescription(AntibioticType.penicillin);
+        details[1] = AntibioticType.getDescription(AntibioticType.vancomycin);
+        details[2] = AntibioticType.getDescription(AntibioticType.linezolid);
+        details[3] = BacteriaType.getDescription(BacteriaType.pneumonia);
+        details[4] = BacteriaType.getDescription(BacteriaType.strep);
+        details[5] = BacteriaType.getDescription(BacteriaType.staph);
 
-        AntibioticType[] abTypes = new AntibioticType[3];
-        abTypes[0] = AntibioticType.penicillin;
-        abTypes[1] = AntibioticType.vancomycin;
-        abTypes[2] = AntibioticType.linezolid;
+        // Name for each type
+        String[] names = new String[6];
+        names[0] = AntibioticType.toString(AntibioticType.penicillin);
+        names[1] = AntibioticType.toString(AntibioticType.vancomycin);
+        names[2] = AntibioticType.toString(AntibioticType.linezolid);
+        names[3] = BacteriaType.getLongName(BacteriaType.pneumonia) + " (" + BacteriaType.getShortName(BacteriaType.pneumonia) + ")";
+        names[4] = BacteriaType.getLongName(BacteriaType.strep) + " (" + BacteriaType.getShortName(BacteriaType.strep) + ")";
+        names[5] = BacteriaType.getLongName(BacteriaType.staph) + " (" + BacteriaType.getShortName(BacteriaType.staph) + ")";
 
-        BacteriaType[] bacTypes = new BacteriaType[3];
-        bacTypes[0] = BacteriaType.pneumonia;
-        bacTypes[1] = BacteriaType.strep;
-        bacTypes[2] = BacteriaType.staph;
+        // Image resource for each type
+        int[] imgs = new int[6];
+        imgs[0] = AntibioticType.getImage(AntibioticType.penicillin);
+        imgs[1] = AntibioticType.getImage(AntibioticType.vancomycin);
+        imgs[2] = AntibioticType.getImage(AntibioticType.linezolid);
+        imgs[3] = BacteriaType.getImage(BacteriaType.pneumonia);
+        imgs[4] = BacteriaType.getImage(BacteriaType.strep);
+        imgs[5] = BacteriaType.getImage(BacteriaType.staph);
 
         // Set up adapter
-       LibraryEntryAdapter adapter = new LibraryEntryAdapter(this.getApplicationContext(), list, abTypes, bacTypes);
+       LibraryEntryAdapter adapter = new LibraryEntryAdapter(this.getApplicationContext(), details, names, imgs);
 
         // Attach to GridView
         GridView gridView = (GridView) findViewById(R.id.libraryGridView);

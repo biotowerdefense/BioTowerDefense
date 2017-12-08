@@ -16,16 +16,16 @@ import android.widget.TextView;
 public class LibraryEntryAdapter extends ArrayAdapter<String> {
 
     private final Context context;
-    private final int[] values;
-    private final AntibioticType[] abTypes;
-    private final BacteriaType[] bacTypes;
+    private final int[] details;
+    private final String[] names;
+    private final int[] imgs;
 
-    public LibraryEntryAdapter(Context context, int[] values, AntibioticType[] abTypes, BacteriaType[] bacTypes) {
+    public LibraryEntryAdapter(Context context, int[] details, String[] names, int[] imgs) {
         super(context, -1, new String[6]);
         this.context = context;
-        this.values = values;
-        this.abTypes = abTypes;
-        this.bacTypes = bacTypes;
+        this.details = details;
+        this.names = names;
+        this.imgs = imgs;
     }
 
     @Override
@@ -34,26 +34,18 @@ public class LibraryEntryAdapter extends ArrayAdapter<String> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.rowlayout, parent, false);
 
-        // Set detail text
-        TextView detailText = (TextView) rowView.findViewById(R.id.detail);
-        detailText.setText(values[position]);
-
         // Set label text
         TextView labelText = (TextView) rowView.findViewById(R.id.label);
-        if (position < 3) {
-            labelText.setText(AntibioticType.toString(abTypes[position]));
-        } else {
-            String title = BacteriaType.getLongName(bacTypes[position-3]) + " (" + BacteriaType.getShortName(bacTypes[position-3]) + ")";
-            labelText.setText(title);
-        }
+        labelText.setText(names[position]);
+        labelText.setAllCaps(true);
+
+        // Set detail text
+        TextView detailText = (TextView) rowView.findViewById(R.id.detail);
+        detailText.setText(details[position]);
 
         // Set icon
         ImageView img = (ImageView) rowView.findViewById(R.id.icon);
-        if (position < 3) {
-            img.setImageResource(AntibioticType.getImage(abTypes[position]));
-        } else {
-            img.setImageResource(BacteriaType.getImage(bacTypes[position-3]));
-        }
+        img.setImageResource(imgs[position]);
 
         return rowView;
     }
